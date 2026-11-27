@@ -101,8 +101,12 @@ class PCClassifierAgent:
             if listing.storage_gb >= 512:
                 return 7400.0 if cond == "novo" else 5500.0
             return 6400.0 if cond == "novo" else 4800.0
-        elif "M5" in proc:
+        elif "M5 PRO" in proc or "M5 MAX" in proc:
             return 38000.0 if cond == "novo" else 32000.0
+        elif "M5" in proc:
+            if listing.storage_gb >= 512:
+                return 13999.0 if cond == "novo" else 10200.0
+            return 11999.0 if cond == "novo" else 8900.0
         elif "M4 MAX" in proc:
             return 28000.0 if cond == "novo" else 23000.0
         elif "M4 PRO" in proc:

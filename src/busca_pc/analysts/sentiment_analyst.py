@@ -76,10 +76,13 @@ class SentimentAnalystAgent:
                 "Design moderno, leve e compacto com opções coloridas (Índigo, Citrus, Prata)"
             ])
 
-        elif "APPLE" in brand_upper and ("M2" in proc_upper or "M3" in proc_upper or "M4" in proc_upper) and "AIR" in title_upper:
-            sentiment_score = 91.0
+        elif "APPLE" in brand_upper and ("M2" in proc_upper or "M3" in proc_upper or "M4" in proc_upper or "M5" in proc_upper) and "AIR" in title_upper:
+            sentiment_score = 95.0 if "M5" in proc_upper else 91.0
             verdict = "Altíssima Confiabilidade"
             consensus = (
+                "Recepção extremamente positiva da comunidade técnica global. O MacBook Air com chip M5 destaca-se pelo salto expressivo "
+                "em aceleradores neurais para Apple Intelligence, suporte a Ray Tracing por hardware, excelente eficiência térmica e vida útil de bateria de até 18 horas."
+                if "M5" in proc_upper else
                 "Altíssima aprovação pelo novo design moderno, tela Liquid Retina mais brilhante e conector MagSafe 3. "
                 "Excelente longevidade e suporte oficial contínuo da Apple."
             )
@@ -87,6 +90,8 @@ class SentimentAnalystAgent:
                 "Design moderno ultrafino com bordas reduzidas e conector MagSafe 3",
                 "Tela com 500 nits e excelente fidelidade de cores"
             ])
+            if "M5" in proc_upper:
+                pros.append("Aceleradores neurais de ponta e suporte a Ray Tracing na linha Air")
 
         # 4. MacBook Pro M-Series
         elif "APPLE" in brand_upper and "PRO" in title_upper and "M" in proc_upper:

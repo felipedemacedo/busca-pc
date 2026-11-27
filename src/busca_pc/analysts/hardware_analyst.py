@@ -27,7 +27,7 @@ class HardwareAnalystAgent:
 
         # 1. CPU / Processamento Central (Máximo: 40 pontos)
         cpu_score = 20.0
-        if "M5" in proc or "M4 MAX" in proc or "M3 MAX" in proc:
+        if "M5 PRO" in proc or "M5 MAX" in proc or "M4 MAX" in proc or "M3 MAX" in proc:
             cpu_score = 40.0
             lifespan = 7
             proc_eval = f"Monstro de processamento topo de linha ({listing.processor}) com dezenas de núcleos e motores de IA."
@@ -37,6 +37,11 @@ class HardwareAnalystAgent:
             lifespan = 7
             proc_eval = f"Chip topo de linha de 2ª geração 3nm ({listing.processor}) com altíssima vazão monothread e multithread."
             pros.append(f"Processador estado da arte {listing.processor}")
+        elif "M5" in proc:
+            cpu_score = 36.0
+            lifespan = 6
+            proc_eval = f"Chip Apple M5 de nova geração 2026 ({listing.processor}) com aceleradores neurais dedicados e alto IPC."
+            pros.append("Chip Apple M5 (2026): silício de última geração com alta eficiência e IA avançada")
         elif "CORE ULTRA 9" in proc:
             cpu_score = 36.0
             lifespan = 6
@@ -112,6 +117,9 @@ class HardwareAnalystAgent:
         elif "RTX 3050" in proc or "RTX 3050" in title:
             gpu_score = 17.0
             pros.append("NVIDIA GeForce RTX 3050 6GB dedicada: boa entrada gamer")
+        elif "M5" in proc or "M4" in proc:
+            gpu_score = 18.0
+            pros.append("GPU integrada Apple com suporte nativo a Ray Tracing por hardware e aceleradores neurais")
         elif "A18" in proc or "M2" in proc:
             gpu_score = 16.0
             pros.append("Gráficos integrados Apple modernos com suporte a aceleração de hardware")

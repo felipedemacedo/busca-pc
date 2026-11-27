@@ -214,6 +214,30 @@ class NewScoutAgent:
                 raw_description="Design moderno com chip M2, tela Liquid Retina de 13.6 polegadas, FaceTime 1080p, MagSafe 3.",
             ),
 
+            # 8.1 Apple Notebook MacBook Air M5 13.6'' 16GB 512GB SSD 2026 (Lançamento Oficial)
+            ComputerListing(
+                id="new-ret-m5-air-05",
+                title="Apple MacBook Air 13.6'' M5 16GB RAM 512GB SSD 2026 - Novo Lacrado",
+                brand="Apple",
+                condition="novo",
+                price=9490.0,
+                location="Mercado Livre Oficial (Envio Full com Frete Grátis Recife/PE)",
+                seller_type="loja_oficial",
+                source="Mercado Livre - Catálogo MacBook Air M5",
+                url="https://lista.mercadolivre.com.br/macbook-air-m5",
+                processor="Apple M5 (10-core CPU, 10-core GPU, Neural Accelerators)",
+                architecture="Apple Silicon",
+                ram_gb=16,
+                storage_gb=512,
+                storage_type="SSD NVMe",
+                screen_size_inches=13.6,
+                year=2026,
+                battery_health_pct=100,
+                battery_cycles=0,
+                accessories=["Novo na caixa lacrada", "Garantia mundial Apple 1 ano", "Carregador MagSafe 3 35W Dual USB-C", "Cabo MagSafe trançado"],
+                raw_description="Novo MacBook Air 13.6'' geração 2026 equipado com chip Apple M5 (10-core CPU, 10-core GPU com Ray Tracing e Neural Engine avançada), 16GB de memória unificada e 512GB SSD. Tela Liquid Retina de 500 nits, Wi-Fi 7 e bateria de até 18 horas.",
+            ),
+
             # 9. MacBook Pro 14'' M3 Pro 18GB 512GB
             ComputerListing(
                 id="new-ret-m3pro-04",
