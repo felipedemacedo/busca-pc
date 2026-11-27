@@ -10,7 +10,8 @@ class KnowledgeBase:
 
     def __init__(self, base_dir: Optional[Path] = None):
         if base_dir is None:
-            self.base_dir = Path(__file__).resolve().parent.parent.parent / "knowledge_base"
+            # Aponta para a pasta knowledge_base na raiz do repositório
+            self.base_dir = Path(__file__).resolve().parent.parent.parent.parent / "knowledge_base"
         else:
             self.base_dir = base_dir
         self.base_dir.mkdir(parents=True, exist_ok=True)
