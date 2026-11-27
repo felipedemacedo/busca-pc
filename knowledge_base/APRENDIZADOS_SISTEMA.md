@@ -53,6 +53,15 @@ Este documento consolida os aprendizados técnicos, de engenharia de dados, de a
 
 ## 4. Calibração de Hardware & Mercado em Recife/PE
 
+### Caso Real de Auditoria (MacBook Pro OLX 1555547340):
+- **Discrepância Detectada**: Um anúncio real com preço de R$ 2.716 no Pix estava associado a um card de "M1 Pro de R$ 7.990 (Tier S)".
+- **Correção Fiel**: A leitura das fotos reais do anúncio revelou um **MacBook Pro 13'' 2019 com processador Intel Core i5 1.4 GHz, 8GB LPDDR3 e Teclado Borboleta**.
+- **Impacto da Reclassificação Agêntica**:
+  - Nota de Hardware caiu de 100/100 para **41/100**.
+  - Nota de Sentimento caiu de 96/100 para **25/100** (alto risco crônico de teclado borboleta).
+  - Veredito rebaixado de *Tier S (Altamente Recomendado)* para **Tier F (Evitar Absolutamente)**.
+  - O sistema cumpriu perfeitamente sua função de proteção anti-prejuízo ao comprador em Recife!
+
 | Categoria | Hardware | Veredito | Aprendizado de Mercado |
 | :--- | :--- | :--- | :--- |
 | **MacBook Air M1 (2020)** | M1 / 8GB / 256GB | **Tier S** | Melhor custo-benefício histórico em Recife (R$ 3.650 a R$ 4.200 seminovo). Liquidez altíssima. |
