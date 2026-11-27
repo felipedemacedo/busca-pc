@@ -76,7 +76,7 @@ class SentimentAnalystAgent:
                 "Design moderno, leve e compacto com opções coloridas (Índigo, Citrus, Prata)"
             ])
 
-        elif "APPLE" in brand_upper and ("M2" in proc_upper or "M3" in proc_upper) and "AIR" in title_upper:
+        elif "APPLE" in brand_upper and ("M2" in proc_upper or "M3" in proc_upper or "M4" in proc_upper) and "AIR" in title_upper:
             sentiment_score = 91.0
             verdict = "Altíssima Confiabilidade"
             consensus = (

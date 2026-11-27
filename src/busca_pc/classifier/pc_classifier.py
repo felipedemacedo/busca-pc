@@ -101,8 +101,14 @@ class PCClassifierAgent:
             if listing.storage_gb >= 512:
                 return 7400.0 if cond == "novo" else 5500.0
             return 6400.0 if cond == "novo" else 4800.0
+        elif "M5" in proc:
+            return 38000.0 if cond == "novo" else 32000.0
+        elif "M4 MAX" in proc:
+            return 28000.0 if cond == "novo" else 23000.0
         elif "M4 PRO" in proc:
             return 23500.0 if cond == "novo" else 18500.0
+        elif "M4" in proc:
+            return 9500.0 if cond == "novo" else 7600.0
         elif "M3 MAX" in proc:
             return 26000.0 if cond == "novo" else 21000.0
         elif "M3 PRO" in proc:
@@ -114,13 +120,19 @@ class PCClassifierAgent:
         elif "M3" in proc:
             return 11200.0 if cond == "novo" else 8500.0
         elif "M2" in proc:
+            if listing.ram_gb >= 16:
+                return 8900.0 if cond == "novo" else 7200.0
             return 7600.0 if cond == "novo" else 6200.0
         elif "M1" in proc:
             if listing.ram_gb >= 16:
                 return 7200.0 if cond == "novo" else 5200.0
             return 6000.0 if cond == "novo" else 4200.0
         elif "INTEL" in proc:
-            return 2200.0 if (listing.year or 2017) >= 2017 else 1400.0
+            if (listing.year or 2017) >= 2020:
+                return 2200.0 if cond == "novo" else 1500.0
+            elif (listing.year or 2017) >= 2017:
+                return 2000.0 if cond == "novo" else 1400.0
+            return 1100.0 if cond == "novo" else 750.0
 
         return 4500.0
 

@@ -83,7 +83,23 @@ Este documento consolida os aprendizados técnicos, de engenharia de dados, de a
 
 ---
 
-## 6. Calibração Rigorosa de Classificação & Índice de Custo-Benefício (Anti-Saturação)
+## 7. Fidelidade Absoluta de Metadados dos Anúncios Reais (Auditoria Cruzada)
+
+### Problema de Divergência entre Card e Anúncio Real:
+Detectou-se uma discrepância crítica entre o card do sistema e o anúncio vivo na OLX Pernambuco:
+- **Caso do Anúncio OLX 1555908500 (`olx-rec-sta-03`)**:
+  - *No card do sistema*: constava R$ 4.850, 8GB de RAM e cor Meia-Noite.
+  - *No anúncio real da OLX*: o título era *"MacBook Air 2022"*, o acabamento era **Prata**, a memória era explicitamente **16GB de RAM** (upgrade de fábrica/CTO), armazenamento de 256GB e o preço real era **R$ 6.200 no Pix** (R$ 6.300 parcelado).
+
+### Correção Global e Padronização Fidedigna:
+Todos os anúncios reais do mercado secundário de Pernambuco foram auditados e tiveram seus dados sincronizados rigorosamente com as publicações originais:
+1. **OLX 1555908500**: Atualizado para **MacBook Air 2022 M2 13.6'' Prata 16GB RAM 256GB SSD**, preço **R$ 6.200 no Pix** (Tier A, ICB 86.8).
+2. **OLX 1555184022**: Ajustado para a especificação real do anúncio — **MacBook Air M1 8GB RAM 256GB SSD com apenas 20 ciclos de bateria**, preço real de **R$ 3.890 no Pix**.
+3. **OLX 1556120178**: Ajustado para **MacBook Air M4 16GB RAM 256GB SSD**, com garantia oficial Apple até Junho/2027 e preço de **R$ 7.100**.
+4. **OLX 1556001296**: Ajustado para **MacBook Air Retina 2020 Intel Core i5 8GB 500GB SSD** com valor real de **R$ 1.399**.
+5. **OLX 1556149361**: Ajustado para **MacBook Air 2014 Intel Core i5 8GB 128GB** com bateria defeituosa e valor real de **R$ 727 no Pix**.
+6. **OLX 1556020318**: Ajustado para a configuração real de topo **MacBook Pro 16'' Apple M5 Pro 24GB RAM 1TB SSD** com valor de **R$ 34.900**.
+
 
 ### Problema Anterior de Inflação de Notas:
 Com fórmulas aditivas simples, quase qualquer máquina moderna alcançava Nota de Hardware 100/100 e ICB 98-100 (Tier S), criando saturação e impedindo o usuário de distinguir verdadeiras oportunidades de compras com custo-benefício mediano.

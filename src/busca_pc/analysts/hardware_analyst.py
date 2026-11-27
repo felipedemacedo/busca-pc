@@ -27,7 +27,7 @@ class HardwareAnalystAgent:
 
         # 1. CPU / Processamento Central (Máximo: 40 pontos)
         cpu_score = 20.0
-        if "M3 MAX" in proc or "M4 MAX" in proc:
+        if "M5" in proc or "M4 MAX" in proc or "M3 MAX" in proc:
             cpu_score = 40.0
             lifespan = 7
             proc_eval = f"Monstro de processamento topo de linha ({listing.processor}) com dezenas de núcleos e motores de IA."
@@ -47,6 +47,11 @@ class HardwareAnalystAgent:
             lifespan = 6
             proc_eval = f"Processador profissional ({listing.processor}) com barramento ampliado e alta longevidade."
             pros.append(f"Silício profissional {listing.processor}")
+        elif "M4" in proc:
+            cpu_score = 33.0
+            lifespan = 6
+            proc_eval = f"Chip Apple M4 de última geração ({listing.processor}) com alta vazão de CPU e motores neurais."
+            pros.append("Chip Apple M4 de última geração")
         elif "CORE ULTRA 7" in proc:
             cpu_score = 32.0
             lifespan = 6
