@@ -21,6 +21,7 @@ class ListingModel(Base):
 
     id = Column(String(64), primary_key=True)
     title = Column(String(255), nullable=False, index=True)
+    brand = Column(String(64), default="Apple", index=True)
     condition = Column(String(32), nullable=False, index=True)  # novo, seminovo, usado
     price = Column(Float, nullable=False, index=True)
     currency = Column(String(8), default="BRL")

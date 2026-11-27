@@ -6,6 +6,7 @@ class ComputerListing(BaseModel):
     """Representa um anúncio ou oferta de computador encontrado por um Scout."""
     id: str
     title: str
+    brand: str = "Apple"
     condition: Literal["novo", "seminovo", "usado"]
     price: float
     currency: str = "BRL"
@@ -66,13 +67,13 @@ class MissionSpec(BaseModel):
     """Diretriz de missão formulada pelo Arquiteto da Operação."""
     mission_id: str
     title: str
-    target_category: str
-    target_city: str
-    target_state: str
+    target_category: str = "Notebook"
+    target_city: str = "Recife"
+    target_state: str = "PE"
     max_budget: Optional[float] = None
     min_ram_gb: int = 8
-    target_brand: str = "Apple"
-    instructions: str
+    target_brand: str = "Todas"
+    instructions: str = ""
 
 class LearningRecord(BaseModel):
     """Registro persistente de aprendizados para evolução contínua do sistema."""

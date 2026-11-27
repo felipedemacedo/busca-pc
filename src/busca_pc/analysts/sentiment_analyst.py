@@ -6,9 +6,8 @@ from busca_pc.models import ComputerListing, SentimentAudit
 class SentimentAnalystAgent:
     """
     Agente especialista em sentimento, reputação na internet e histórico técnico de falhas.
-    Analisa fóruns (Reddit r/mac, MacRumors), canais de assistência técnica (YouTube, iFixit)
-    e identifica problemas crônicos como Teclado Borboleta, Flexgate, Throttling Térmico e
-    velocidade de SSD (NAND único).
+    Analisa fóruns (Reddit, Clube do Hardware, MacRumors), canais de assistência técnica (YouTube, Adrenaline)
+    e identifica problemas crônicos bem como pontos fortes de marcas como Apple e Dell.
     """
 
     NAME = "SentimentAnalystAgent"
@@ -16,19 +15,20 @@ class SentimentAnalystAgent:
 
     async def analyze(self, listing: ComputerListing) -> SentimentAudit:
         """Executa auditoria de sentimento técnico e histórico de defeitos da máquina."""
-        await asyncio.sleep(0.05)  # Simula latência de consulta à base de reputação e fóruns
+        await asyncio.sleep(0.02)
 
         pros = []
         cons = []
         chronic_flaws = []
-        sentiment_score = 60.0
+        sentiment_score = 75.0
 
         title_upper = listing.title.upper()
         proc_upper = listing.processor.upper()
-        year = listing.year or (2020 if "M1" in proc_upper else 2018)
+        brand_upper = listing.brand.upper()
+        year = listing.year or (2020 if "M1" in proc_upper else 2022)
 
-        # Diagnóstico de MacBooks Intel 2016-2019
-        if "INTEL" in proc_upper or year in [2016, 2017, 2018, 2019] and "M" not in proc_upper:
+        # 1. MacBooks Intel 2016-2019 (Problemas Crônicos Graves)
+        if "APPLE" in brand_upper and ("INTEL" in proc_upper or (year in [2016, 2017, 2018, 2019] and "M" not in proc_upper)):
             chronic_flaws.append("Teclado mecanismo Borboleta (Butterfly keyboard) sujeito a repetição ou quebra de teclas")
             chronic_flaws.append("Problema crônico 'Flexgate' (cabo da tela frágil rompendo na dobradiça)")
             chronic_flaws.append("Thermal throttling acentuado e ventoinhas extremamente ruidosas")
@@ -45,8 +45,8 @@ class SentimentAnalystAgent:
                 "Reputação severamente manchada em fóruns de reparo e no Reddit"
             ])
 
-        # Diagnóstico de MacBook Air M1 (2020)
-        elif "M1" in proc_upper and "AIR" in title_upper:
+        # 2. MacBook Air M1 (2020)
+        elif "APPLE" in brand_upper and "M1" in proc_upper and "AIR" in title_upper:
             sentiment_score = 94.0
             verdict = "Altíssima Confiabilidade"
             consensus = (
@@ -60,38 +60,79 @@ class SentimentAnalystAgent:
                 "Zero ruído acústico e sem peças mecânicas móveis de arrefecimento",
                 "Alta liquidez de revenda no mercado brasileiro"
             ])
-            if listing.ram_gb == 8:
-                cons.append("Comunidade alerta que 8GB pode usar swap em edição 4K pesada, mas para uso diário é impecável")
 
-        # Diagnóstico de MacBook Air M2
-        elif "M2" in proc_upper and "AIR" in title_upper:
-            sentiment_score = 90.0
+        # 3. MacBook Air M2 / M3
+        elif "APPLE" in brand_upper and ("M2" in proc_upper or "M3" in proc_upper) and "AIR" in title_upper:
+            sentiment_score = 91.0
             verdict = "Altíssima Confiabilidade"
             consensus = (
-                "Altíssima aprovação pelo novo design moderno, tela Liquid Retina mais brilhante e carregador MagSafe 3. "
-                "Único apontamento em reviews técnicos é que a versão de 256GB usa um único chip NAND, o que gera menor "
-                "velocidade de gravação sequencial que o M1 de 256GB, embora imperceptível para a maioria."
+                "Altíssima aprovação pelo novo design moderno, tela Liquid Retina mais brilhante e conector MagSafe 3. "
+                "Excelente longevidade e suporte oficial contínuo da Apple."
             )
             pros.extend([
                 "Design moderno ultrafino com bordas reduzidas e conector MagSafe 3",
-                "Tela com 500 nits e excelente fidelidade de cores",
-                "Câmera FaceTime 1080p muito elogiada frente aos 720p dos modelos anteriores"
+                "Tela com 500 nits e excelente fidelidade de cores"
             ])
-            if listing.storage_gb == 256:
-                cons.append("Nota técnica de reviews: SSD de 256GB com chip NAND único é ligeiramente mais lento em benchmarks sintéticos")
 
-        # Diagnóstico de MacBook Pro M1/M2/M3
-        elif "PRO" in title_upper and "M" in proc_upper:
+        # 4. MacBook Pro M-Series
+        elif "APPLE" in brand_upper and "PRO" in title_upper and "M" in proc_upper:
             sentiment_score = 96.0
             verdict = "Altíssima Confiabilidade"
             consensus = (
-                "Máquinas de grau profissional com reputação impecável. Telas mini-LED ProMotion 120Hz aclamadas, "
-                "diversidade de portas (HDMI, leitor SD) e refrigeração ativa silenciosa."
+                "Máquinas de grau profissional com reputação impecável na comunidade de desenvolvedores e criadores. "
+                "Telas mini-LED ProMotion 120Hz aclamadas, diversidade de portas e arrefecimento silencioso."
             )
             pros.extend([
                 "Consenso de excelência para desenvolvedores e criadores de conteúdo",
                 "Tela ProMotion e portas HDMI/SD resgatadas aclamadas pela comunidade"
             ])
+
+        # 5. Dell Inspiron (Uso Diário / Custo-Benefício no Brasil)
+        elif "DELL" in brand_upper and "INSPIRON" in title_upper:
+            sentiment_score = 88.0
+            verdict = "Boa Confiabilidade"
+            consensus = (
+                "Linha consagrada e muito vendida no Brasil com excelente índice de satisfação pelo suporte e garantia em domicílio da Dell. "
+                "Comunidade elogia a presença de tela de 120Hz no Inspiron 15 e a facilidade de upgrade de memória RAM DDR5 e SSD. "
+                "Atenção recomendada em fóruns apenas ao manuseio cuidadoso da carcaça plástica na dobradiça."
+            )
+            pros.extend([
+                "Garantia oficial Dell com atendimento em domicílio (on-site) muito elogiada",
+                "Memória RAM e SSD expansíveis pelo próprio usuário",
+                "Tela de 120Hz fluida mesmo em modelos de entrada/intermediários",
+                "Excelente custo-benefício em períodos de ofertas da Dell Brasil"
+            ])
+
+        # 6. Dell G15 Gamer
+        elif "DELL" in brand_upper and ("G15" in title_upper or "GAMER" in title_upper):
+            sentiment_score = 89.0
+            verdict = "Boa Confiabilidade"
+            consensus = (
+                "Notebook gamer muito respeitado e recomendado em canais técnicos como Adrenaline e Hardware.com.br. "
+                "A robustez da placa dedicada GeForce RTX com alto TGP entrega excelente desempenho em jogos modernos e renderização. "
+                "Comunidade destaca que é uma máquina pesada com fonte grande (foco em uso na tomada), mas com ótima durabilidade."
+            )
+            pros.extend([
+                "Potência gráfica das placas RTX com TGP liberado para máximo FPS",
+                "Construção térmica robusta e resfriamento competente",
+                "Ótima relação de preço por desempenho gráfico na Black Friday Dell"
+            ])
+            cons.append("Peso elevado (~2.8 kg) e fonte de alimentação volumosa")
+
+        # 7. Dell XPS (Ultrabook Premium)
+        elif "DELL" in brand_upper and "XPS" in title_upper:
+            sentiment_score = 93.0
+            verdict = "Altíssima Confiabilidade"
+            consensus = (
+                "Considerado por especialistas um dos melhores ultrabooks Windows do mundo. Acabamento primoroso em alumínio usinado CNC, "
+                "telas OLED deslumbrantes com bordas quase invisíveis e trackpad de vidro impecável. O único limitador citado é o preço elevado no Brasil."
+            )
+            pros.extend([
+                "Acabamento premium em alumínio CNC e fibra de carbono",
+                "Tela OLED de nível de referência para criação visual",
+                "Novo chip Intel Core Ultra com NPU integrada para inteligência artificial"
+            ])
+
         else:
             verdict = "Boa Confiabilidade"
             consensus = "Avaliações majoritariamente positivas na média da categoria."

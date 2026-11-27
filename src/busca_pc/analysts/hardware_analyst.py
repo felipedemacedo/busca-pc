@@ -6,8 +6,9 @@ from busca_pc.models import ComputerListing, HardwareAudit
 class HardwareAnalystAgent:
     """
     Agente especialista em auditoria técnica e classificação precisa de hardware.
-    Mede poder computacional, arquitetura de silício (ARM Apple Silicon vs x86),
-    largura de banda de memória, barramentos, eficiência térmica, longevidade e gargalos.
+    Avalia Apple Silicon (M1 a M4), processadores Intel modernos (Core 13ª Geração e Core Ultra),
+    placas de vídeo dedicadas NVIDIA GeForce RTX, memória unificada vs DDR5 expansível,
+    telas (120Hz/165Hz/OLED) e eficiência térmica.
     """
 
     NAME = "HardwareAnalystAgent"
@@ -20,26 +21,45 @@ class HardwareAnalystAgent:
         pros = []
         cons = []
         score = 50.0
-        lifespan = 3
+        lifespan = 4
 
         proc = listing.processor.upper()
+        title = listing.title.upper()
 
-        # 1. Arquitetura e Processador
-        if "M4 PRO" in proc or "M4 MAX" in proc:
+        # 1. Arquitetura, Processador & Gráficos
+        # Placas de Vídeo Dedicadas Gamer/Workstation
+        if "RTX 4060" in proc or "RTX 4060" in title:
+            score += 38.0
+            lifespan = 6
+            proc_eval = f"{listing.processor} com GPU dedicada NVIDIA RTX 4060 8GB (DLSS 3 e Ray Tracing). Altíssimo poder gráfico para games pesados e inteligência artificial."
+            pros.append("NVIDIA GeForce RTX 4060 8GB dedicada: excelente para IA, 3D e jogos em 1440p")
+        elif "RTX 4050" in proc or "RTX 4050" in title:
+            score += 34.0
+            lifespan = 5
+            proc_eval = f"{listing.processor} com GPU dedicada NVIDIA RTX 4050 6GB. Ótima performance em jogos modernos e aceleração CUDA."
+            pros.append("NVIDIA GeForce RTX 4050 6GB: suporte moderno a DLSS 3 e aceleração gráfica")
+        elif "RTX 3050" in proc or "RTX 3050" in title:
+            score += 28.0
+            lifespan = 4
+            proc_eval = f"{listing.processor} com GPU dedicada NVIDIA RTX 3050 6GB. Entrada gamer competente para 1080p."
+            pros.append("NVIDIA GeForce RTX 3050 6GB dedicada: boa entrada gráfica com suporte a ray tracing")
+
+        # Apple Silicon Chips
+        elif "M4 PRO" in proc or "M4 MAX" in proc:
             score += 42.0
             lifespan = 7
             proc_eval = f"SoC topo de linha ({listing.processor}) de última geração com litografia 3nm de 2ª geração, largura de banda absurda e Thunderbolt 5."
-            pros.append(f"Chip {listing.processor} estado da arte com até 7 anos de longevidade máxima")
+            pros.append(f"Chip {listing.processor} estado da arte com até 7 anos de longevidade")
         elif "M3 MAX" in proc or "M2 MAX" in proc:
             score += 40.0
             lifespan = 6
-            proc_eval = f"Monstro de computação ({listing.processor}) com dezenas de núcleos de GPU, motores neurais duplos e alta capacidade de renderização/LLMs."
+            proc_eval = f"Monstro de computação ({listing.processor}) com dezenas de núcleos de GPU, motores neurais duplos e alta capacidade de renderização."
             pros.append(f"Workstation extrema com chip {listing.processor}")
         elif "M3 PRO" in proc or "M2 PRO" in proc or "M1 PRO" in proc:
             score += 36.0
             lifespan = 6
             proc_eval = f"Processador profissional ({listing.processor}) com barramento de memória alargado (150-200 GB/s) e múltiplos encoders de mídia."
-            pros.append(f"Silício profissional {listing.processor} com barramento ultraveloz e aceleração de mídia")
+            pros.append(f"Silício profissional {listing.processor} com barramento ultraveloz")
         elif "M3" in proc:
             score += 33.0
             lifespan = 5
@@ -53,79 +73,96 @@ class HardwareAnalystAgent:
         elif "M1" in proc:
             score += 26.0
             lifespan = 4
-            proc_eval = f"Chip Apple Silicon M1 pioneiro. Mantém performance formidável, autonomia de até 18h e superação nítida sobre x86."
+            proc_eval = f"Chip Apple Silicon M1 pioneiro. Mantém performance formidável, autonomia de até 18h e superação nítida sobre x86 antigo."
             pros.append("Apple Silicon M1: autonomia estelar, operação fria e agilidade monothread")
-        elif "INTEL" in proc or "CORE I" in proc:
+
+        # Processadores Modernos Intel (PC Dell)
+        elif "CORE ULTRA 9" in proc or "CORE ULTRA 7" in proc:
+            score += 36.0
+            lifespan = 6
+            proc_eval = f"Processador Intel Core Ultra de ponta ({listing.processor}) com NPU dedicada para IA local, arquitetura híbrida e eficiência aprimorada."
+            pros.append(f"Intel Core Ultra com NPU integrada para tarefas inteligentes de IA")
+        elif "I7-13" in proc or "I5-13" in proc:
+            score += 29.0
+            lifespan = 5
+            proc_eval = f"Processador moderno Intel Core 13ª Geração ({listing.processor}). Alta contagem de núcleos (P-cores + E-cores) e ótimo desempenho multithread."
+            pros.append(f"Intel Core 13ª Geração de alto rendimento para produtividade")
+        elif "I3-12" in proc or "I3-13" in proc:
+            score += 18.0
+            lifespan = 3
+            proc_eval = f"Processador de entrada Intel Core i3 ({listing.processor}). Adequado para tarefas cotidianas, estudos e escritório leve."
+            pros.append("Intel Core de arquitetura recente competente para tarefas leves")
+
+        # Processadores Antigos Intel em MacBooks
+        elif "APPLE" in listing.brand.upper() and ("INTEL" in proc or "CORE I" in proc):
             score -= 18.0
             lifespan = 1
-            proc_eval = f"Processador legado Intel x86 ({listing.processor}). Arquitetura defasada no ecossistema Apple, alto consumo térmico e término de suporte oficial."
-            cons.append("Processador Intel ultrapassado no ecossistema Mac: quente, ruidoso e sem longevidade de software")
+            proc_eval = f"Processador legado Intel x86 em Mac ({listing.processor}). Arquitetura defasada no ecossistema Apple, alto consumo térmico e término de suporte oficial."
+            cons.append("Processador Intel ultrapassado no ecossistema Mac: quente, ruidoso e sem longevidade")
         else:
             proc_eval = f"Processador: {listing.processor}"
 
         # 2. Memória RAM
         if listing.ram_gb >= 32:
             score += 18.0
-            ram_eval = f"{listing.ram_gb}GB de memória unificada massiva. Capacidade para rodar modelos de IA locais (LLMs), múltiplos containers e timelines 8K sem qualquer swap."
-            pros.append(f"{listing.ram_gb}GB RAM: capacidade para fluxos extremos e IA local")
+            ram_eval = f"{listing.ram_gb}GB de memória veloz. Capacidade profissional para múltiplos containers, edição pesada e IA."
+            pros.append(f"{listing.ram_gb}GB RAM de capacidade profissional")
         elif listing.ram_gb >= 16:
             score += 14.0
-            ram_eval = f"{listing.ram_gb}GB de memória unificada. Amplo espaço para compilação pesada, Docker, multitarefa e longevidade sem desgaste de swap."
-            pros.append(f"{listing.ram_gb}GB RAM: padrão ideal para longevidade e multitarefa pesada")
+            ram_eval = f"{listing.ram_gb}GB de memória. Amplo espaço para multitarefa, compilação pesada e longevidade sem gargalo."
+            pros.append(f"{listing.ram_gb}GB RAM: padrão ideal para longevidade e multitarefa")
         elif listing.ram_gb == 8:
-            score += 4.0
-            ram_eval = "8GB de memória unificada. Excelente para uso geral, navegação intensa, estudos e escritório; sob cargas muito pesadas, recorre ao swap do SSD."
-            pros.append("8GB unificados bem otimizados pelo macOS para tarefas cotidianas")
-            cons.append("8GB é o limite básico atual; sem possibilidade de upgrade físico")
+            score += 5.0
+            ram_eval = "8GB de memória. Suficiente para escritório e uso geral; tarefas muito pesadas podem exigir upgrade ou swap."
+            if "DELL" in listing.brand.upper():
+                pros.append("8GB de RAM (expansível via slots SO-DIMM na linha Dell)")
+            else:
+                cons.append("8GB soldados sem possibilidade de upgrade físico")
         else:
-            score -= 22.0
+            score -= 20.0
             ram_eval = f"{listing.ram_gb}GB de RAM: insuficiente para padrões contemporâneos."
             cons.append(f"Apenas {listing.ram_gb}GB de memória RAM")
 
         # 3. Armazenamento SSD
         if listing.storage_gb >= 1024:
             score += 12.0
-            storage_eval = f"{listing.storage_gb}GB (1TB) SSD NVMe de alta velocidade, espaço profissional com sobra."
+            storage_eval = f"{listing.storage_gb}GB (1TB) SSD NVMe veloz, espaço profissional amplo."
             pros.append(f"{listing.storage_gb}GB SSD espaçoso de 1TB")
         elif listing.storage_gb >= 512:
             score += 8.0
-            storage_eval = f"{listing.storage_gb}GB SSD NVMe veloz, espaço seguro para sistema e bibliotecas locais."
-            pros.append(f"{listing.storage_gb}GB SSD balanceado")
+            storage_eval = f"{listing.storage_gb}GB SSD NVMe de alta velocidade, espaço seguro para sistema e arquivos."
+            pros.append(f"{listing.storage_gb}GB SSD NVMe veloz")
         elif listing.storage_gb == 256:
-            score += 3.0
-            storage_eval = "256GB SSD ultrarrápido. Atende perfeitamente sistema e projetos em nuvem, mas requer cautela ou drive externo para mídias pesadas."
-            cons.append("256GB requer disciplina com armazenamento ou SSD externo")
+            score += 4.0
+            storage_eval = "256GB SSD. Atende perfeitamente sistema e projetos em nuvem, mas requer atenção com mídias pesadas."
         else:
             score -= 12.0
-            storage_eval = f"{listing.storage_gb}GB muito restrito para instalações e atualizações do SO."
-            cons.append("Armazenamento extremamente limitado")
+            storage_eval = f"{listing.storage_gb}GB muito restrito."
+            cons.append("Armazenamento restrito")
 
         # 4. Tela e Conectividade
-        if listing.screen_size_inches and listing.screen_size_inches >= 14.0:
+        if "OLED" in title or "4K" in title:
+            score += 10.0
+            pros.append("Tela 4K OLED de altíssima fidelidade de cor e contraste infinito")
+        elif "165HZ" in title:
+            score += 8.0
+            pros.append("Tela gamer rápida de 165Hz com 100% sRGB")
+        elif "120HZ" in title or (listing.screen_size_inches and listing.screen_size_inches >= 14.0 and "APPLE" in listing.brand.upper()):
             score += 6.0
-            pros.append("Tela Liquid Retina XDR Mini-LED com taxa de 120Hz ProMotion e portas HDMI/SD")
-        elif listing.screen_size_inches and listing.screen_size_inches == 13.6:
-            score += 3.0
-            pros.append("Tela Liquid Retina com bordas finas e 500 nits de brilho")
+            pros.append("Tela fluida de 120Hz para máxima suavidade visual")
 
-        # 5. Eficiência Térmica e Autonomia
+        # 5. Eficiência Térmica
         if listing.architecture == "Apple Silicon":
             score += 8.0
-            thermal_eval = "Arquitetura Apple Silicon de altíssima eficiência energética, mantendo 14 a 22 horas de bateria real e operação fria."
-            pros.append("Autonomia de bateria estelar (14h a 22h) e operação silenciosa")
+            thermal_eval = "Arquitetura Apple Silicon de altíssima eficiência energética, mantendo 14 a 22 horas de bateria real e operação silenciosa."
+            pros.append("Autonomia de bateria estelar (14h a 22h)")
+        elif "GAMER" in title or "G15" in title:
+            thermal_eval = "Sistema térmico robusto com ventiladores duplos e câmara de exaustão inspirada na Alienware para sustentar carga contínua da GPU."
+            pros.append("Arrefecimento com ventoinhas duplas para manter a GPU em alto desempenho")
+        elif "DELL" in listing.brand.upper():
+            thermal_eval = "Dissipação térmica balanceada para laptops finos com dobradiça elevatória para melhor fluxo de ar."
         else:
-            score -= 12.0
-            thermal_eval = "Arquitetura x86 com alta dissipação térmica, ventoinhas constantes e autonomia reduzida (2 a 4 horas)."
-            cons.append("Esquenta consideravelmente e ventoinhas disparam sob carga leve")
-
-        # 6. Saúde da Bateria
-        if listing.battery_health_pct is not None:
-            if listing.battery_health_pct < 80:
-                score -= 10.0
-                cons.append(f"Saúde da bateria em {listing.battery_health_pct}% (necessitará de manutenção em breve)")
-            elif listing.battery_health_pct >= 90:
-                score += 3.0
-                pros.append(f"Saúde da bateria excelente: {listing.battery_health_pct}%")
+            thermal_eval = "Térmica convencional de notebook."
 
         final_hw_score = max(5.0, min(100.0, round(score, 1)))
 

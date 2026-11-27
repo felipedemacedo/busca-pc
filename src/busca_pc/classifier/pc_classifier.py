@@ -5,10 +5,8 @@ from busca_pc.models import ComputerListing, HardwareAudit, SentimentAudit, Fina
 class PCClassifierAgent:
     """
     Especialista em Classificação de PC.
-    Avalia TODO o espectro de máquinas (de modelos de baixo custo a workstations de ponta),
-    sem limites artificiais de orçamento. Calcula a nota composta de produto, o valor justo
-    de mercado específico da configuração, o Índice de Custo-Benefício (ICB), o Tier (S a F)
-    e o veredito final.
+    Avalia notebooks Apple e Dell, calculando notas compostas, preços justos de mercado,
+    Índice de Custo-Benefício (ICB), Tiers (S a F) e vereditos técnicos.
     """
 
     NAME = "PCClassifierAgent"
@@ -24,10 +22,9 @@ class PCClassifierAgent:
         """Emite o laudo final consolidado e a nota precisa para o computador."""
 
         # 1. Nota Composta de Qualidade do Produto (0 - 100)
-        # Hardware: 55% de peso; Sentimento/Confiabilidade de Comunidade: 45% de peso
         composite_quality = (hw_audit.hardware_score * 0.55) + (sent_audit.sentiment_score * 0.45)
 
-        # 2. Definição do Preço de Referência Específico de Mercado em Recife
+        # 2. Definição do Preço de Referência Específico de Mercado
         fair_price = self._determine_benchmark_price(listing)
 
         # 3. Análise de Preço e Desconto Relativo
@@ -39,20 +36,20 @@ class PCClassifierAgent:
 
         raw_cbi = composite_quality * price_multiplier
 
-        # Penalidade drástica para produtos com alto risco crônico ou obsolescência (ex: Intel butterfly/flexgate)
+        # Penalidade drástica para produtos com alto risco crônico ou obsolescência (ex: Intel butterfly/flexgate em Mac antigo)
         if "Alto Risco" in sent_audit.reliability_verdict or hw_audit.tier_category == "Obsoleto":
             raw_cbi = min(raw_cbi * 0.35, 30.0)
 
-        # Ajuste de condição: produtos novos têm prêmio de garantia de 1 ano
+        # Ajuste de condição: produtos novos têm garantia total de fábrica
         if listing.condition == "novo":
-            raw_cbi = min(raw_cbi * 1.05, 96.0)
+            raw_cbi = min(raw_cbi * 1.05, 98.0)
 
         cbi_score = round(max(0.0, min(100.0, raw_cbi)), 1)
 
         # 5. Atribuição de Tier e Veredito
         tier, verdict = self._determine_tier_and_verdict(cbi_score, sent_audit, hw_audit, price_delta_pct)
 
-        # 6. Elaboração da Justificativa Técnica & Recomendações
+        # 6. Justificativa Técnica
         justification = self._generate_justification(
             listing, hw_audit, sent_audit, cbi_score, tier, verdict, fair_price, price_delta_pct
         )
@@ -76,11 +73,27 @@ class PCClassifierAgent:
     def _determine_benchmark_price(self, listing: ComputerListing) -> float:
         """Determina o preço de referência justo com base na configuração real da máquina."""
         proc = listing.processor.upper()
+        title = listing.title.upper()
+        brand = listing.brand.upper()
         cond = listing.condition
-        ram = listing.ram_gb
-        storage = listing.storage_gb
 
-        # Workstations e Máquinas Pro
+        # === LINHA DELL ===
+        if "DELL" in brand or "INSPIRON" in title or "G15" in title or "XPS" in title:
+            if "XPS 16" in title or "RTX 4060" in title:
+                return 21000.0 if cond == "novo" else 14500.0
+            elif "XPS 13" in title or "CORE ULTRA" in proc:
+                return 13000.0 if cond == "novo" else 8900.0
+            elif "RTX 4050" in title or "RTX 4050" in proc:
+                return 7500.0 if cond == "novo" else 5500.0
+            elif "RTX 3050" in title or "RTX 3050" in proc or "G15" in title:
+                return 5800.0 if cond == "novo" else 4200.0
+            elif "I5" in proc or "16GB" in title:
+                return 3900.0 if cond == "novo" else 2700.0
+            elif "I3" in proc:
+                return 2900.0 if cond == "novo" else 1900.0
+            return 4000.0
+
+        # === LINHA APPLE MACBOOK ===
         if "M4 PRO" in proc:
             return 23500.0 if cond == "novo" else 18500.0
         elif "M3 MAX" in proc:
@@ -91,26 +104,16 @@ class PCClassifierAgent:
             return 15000.0 if cond == "novo" else 12500.0
         elif "M1 PRO" in proc:
             return 12000.0 if cond == "novo" else 8800.0
-
-        # Linha Air e modelos de consumo
         elif "M3" in proc:
-            if ram >= 16:
-                return 11200.0 if cond == "novo" else 8500.0
-            return 9500.0 if cond == "novo" else 7200.0
+            return 11200.0 if cond == "novo" else 8500.0
         elif "M2" in proc:
-            if ram >= 16:
-                return 9200.0 if cond == "novo" else 7200.0
             return 7600.0 if cond == "novo" else 6200.0
         elif "M1" in proc:
-            if ram >= 16:
+            if listing.ram_gb >= 16:
                 return 7200.0 if cond == "novo" else 5200.0
             return 6000.0 if cond == "novo" else 4200.0
-
-        # Modelos Intel Antigos
         elif "INTEL" in proc:
-            if (listing.year or 2017) >= 2017:
-                return 2200.0
-            return 1400.0
+            return 2200.0 if (listing.year or 2017) >= 2017 else 1400.0
 
         return 4500.0
 
@@ -150,12 +153,12 @@ class PCClassifierAgent:
             return (
                 f"REPROVADO PELO ESPECIALISTA: Embora o preço de R$ {listing.price:,.2f} pareça barato, "
                 f"o equipamento sofre com problemas crônicos graves ({', '.join(sent.chronic_flaws_identified)}) e "
-                f"arquitetura defasada. Qualquer reparo de teclado ou tela em Recife custará entre R$ 1.800 e R$ 3.000, "
+                f"arquitetura defasada. Qualquer reparo em assistência especializada custará entre R$ 1.800 e R$ 3.000, "
                 f"tornando a máquina financeiramente inviável."
             )
 
         preco_str = (
-            f"{abs(delta):.1f}% abaixo do valor justo de mercado em Recife (R$ {fair_price:,.2f})"
+            f"{abs(delta):.1f}% abaixo do valor de referência de mercado (R$ {fair_price:,.2f})"
             if delta >= 0 else
             f"{abs(delta):.1f}% acima da média praticada"
         )
@@ -171,12 +174,18 @@ class PCClassifierAgent:
         precautions = []
         if listing.condition in ["usado", "seminovo"]:
             precautions.append("Marcar encontro exclusivamente em local monitorado em Recife (ex: Shopping Recife, Shopping Riomar ou Plaza Casa Forte).")
-            precautions.append("Exigir a desvinculação completa do iCloud e do 'Buscar Meu Mac' na sua frente antes da transferência Pix.")
-            precautions.append("Testar todas as portas Thunderbolt/USB-C, teclado e trackpad.")
-            precautions.append("Executar o Diagnóstico Oficial Apple (ligar pressionando 'D' ou mantendo o botão Power pressionado).")
-            if listing.battery_health_pct and listing.battery_health_pct < 85:
-                precautions.append(f"Atenção à bateria ({listing.battery_health_pct}% de saúde): orçar futura substituição.")
+            if "APPLE" in listing.brand.upper():
+                precautions.append("Exigir a desvinculação completa do iCloud e do 'Buscar Meu Mac' na sua frente antes da transferência Pix.")
+                precautions.append("Executar o Diagnóstico Oficial Apple (ligar pressionando 'D' ou botão Power).")
+            else:
+                precautions.append("Executar teste de estresse de CPU/GPU (ex: CrystalDiskInfo para o SSD e FurMark para a placa dedicada).")
+                precautions.append("Conferir etiqueta de Service Tag no chassi para checar garantia remanescente no site da Dell.")
+            precautions.append("Testar todas as portas USB/Thunderbolt, teclado e carregador original.")
         else:
-            precautions.append("Conferir se a Nota Fiscal está emitida em seu CPF com número de série correspondente.")
-            precautions.append("Ativar a cobertura de garantia oficial Apple de 1 ano no portal checkcoverage.apple.com.")
+            if "DELL" in listing.brand.upper():
+                precautions.append("Cadastrar a Service Tag no site da Dell para ativar a garantia com atendimento em domicílio (on-site).")
+                precautions.append("Aproveitar condições de frete grátis e cupons adicionais da loja oficial Dell Brasil.")
+            else:
+                precautions.append("Conferir se a Nota Fiscal está emitida em seu CPF com número de série correspondente.")
+                precautions.append("Ativar a cobertura de garantia oficial no portal da fabricante.")
         return precautions

@@ -41,6 +41,7 @@ async def save_mission_results(
         if existing_listing:
             listing_row = existing_listing
             listing_row.title = l.title
+            listing_row.brand = getattr(l, "brand", "Apple") or "Apple"
             listing_row.condition = l.condition
             listing_row.price = l.price
             listing_row.location = l.location
@@ -61,6 +62,7 @@ async def save_mission_results(
             listing_row = ListingModel(
                 id=l.id,
                 title=l.title,
+                brand=getattr(l, "brand", "Apple") or "Apple",
                 condition=l.condition,
                 price=l.price,
                 currency=l.currency,
@@ -249,6 +251,7 @@ async def get_all_classified(
         items.append({
             "id": l.id,
             "title": l.title,
+            "brand": getattr(l, "brand", "Apple") or "Apple",
             "condition": l.condition,
             "price": l.price,
             "currency": l.currency,

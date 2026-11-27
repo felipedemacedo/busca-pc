@@ -6,7 +6,8 @@ from busca_pc.models import ComputerListing, MissionSpec
 class NewScoutAgent:
     """
     Agente especialista em buscar computadores novos lacrados nas principais redes de varejo
-    e lojas oficiais (Amazon Brasil, Mercado Livre Oficial, Fast Shop, iPlace Recife, Apple Store).
+    e lojas oficiais, incluindo a Loja Oficial Dell Brasil (Deals de Black Friday e catálogo de laptops),
+    Apple Store, Amazon Brasil e Mercado Livre Oficial.
     """
 
     NAME = "NewScoutAgent"
@@ -17,10 +18,159 @@ class NewScoutAgent:
         await asyncio.sleep(0.08)
 
         listings: List[ComputerListing] = [
-            # 1. Entrada Novo: MacBook Air M1 8GB 256GB
+            # === DEALS DELL BRASIL (BLACK FRIDAY & CATÁLOGO OFICIAL) ===
+
+            # 1. Dell Inspiron 15 (Black Friday Deal Oficial)
+            ComputerListing(
+                id="dell-bf-insp-01",
+                title="Dell Inspiron 15 Intel Core i5 13ª Geração 16GB RAM 512GB SSD Tela 15.6'' 120Hz Full HD",
+                brand="Dell",
+                condition="novo",
+                price=3499.0,
+                location="Loja Oficial Dell Brasil (Entrega Expressa Recife/PE com Frete Grátis)",
+                seller_type="loja_oficial",
+                source="Dell Brasil Loja Oficial (Oferta Black Friday)",
+                url="https://www.dell.com/pt-br/shop/deals/dc/black-friday-deals",
+                processor="Intel Core i5-1334U (10 núcleos, até 4.60 GHz)",
+                architecture="Intel x86",
+                ram_gb=16,
+                storage_gb=512,
+                storage_type="SSD NVMe",
+                screen_size_inches=15.6,
+                year=2024,
+                battery_health_pct=100,
+                battery_cycles=0,
+                accessories=["Novo na caixa lacrada", "Garantia Dell 1 ano com atendimento em domicílio"],
+                raw_description="Notebook Dell Inspiron 15 com 16GB de memória DDR5, SSD NVMe de 512GB e tela de 120Hz. Frete grátis e parcelamento em 12x sem juros na Black Friday oficial.",
+            ),
+
+            # 2. Dell G15 Gamer RTX 3050 (Black Friday Deal Oficial)
+            ComputerListing(
+                id="dell-bf-g15-02",
+                title="Dell G15 Gamer Intel Core i5 13ª Ger 16GB 512GB SSD NVIDIA GeForce RTX 3050 6GB Tela 120Hz",
+                brand="Dell",
+                condition="novo",
+                price=5299.0,
+                location="Loja Oficial Dell Brasil (Entrega Recife/PE com Garantia em Domicílio)",
+                seller_type="loja_oficial",
+                source="Dell Brasil Loja Oficial (Oferta Black Friday)",
+                url="https://www.dell.com/pt-br/shop/deals/dc/black-friday-deals",
+                processor="Intel Core i5-13450HX (10 núcleos, até 4.6 GHz) + RTX 3050 6GB GDDR6",
+                architecture="Intel x86",
+                ram_gb=16,
+                storage_gb=512,
+                storage_type="SSD NVMe",
+                screen_size_inches=15.6,
+                year=2024,
+                battery_health_pct=100,
+                battery_cycles=0,
+                accessories=["Lacrado oficial Dell", "Carregador 240W", "Garantia 1 ano ProSupport"],
+                raw_description="Notebook gamer Dell G15 com placa de vídeo dedicada GeForce RTX 3050 de 6GB, sistema térmico com câmaras de ar duplas e teclado retroiluminado.",
+            ),
+
+            # 3. Dell G15 Gamer RTX 4050 (Black Friday Deal Oficial)
+            ComputerListing(
+                id="dell-bf-g15-03",
+                title="Dell G15 Gamer Intel Core i7 13ª Ger 16GB 512GB SSD NVIDIA GeForce RTX 4050 6GB Tela 165Hz sRGB",
+                brand="Dell",
+                condition="novo",
+                price=6899.0,
+                location="Loja Oficial Dell Brasil (Entrega Recife/PE)",
+                seller_type="loja_oficial",
+                source="Dell Brasil Loja Oficial (Oferta Black Friday)",
+                url="https://www.dell.com/pt-br/shop/deals/dc/black-friday-deals",
+                processor="Intel Core i7-13650HX (14 núcleos, até 4.9 GHz) + RTX 4050 6GB",
+                architecture="Intel x86",
+                ram_gb=16,
+                storage_gb=512,
+                storage_type="SSD NVMe",
+                screen_size_inches=15.6,
+                year=2024,
+                battery_health_pct=100,
+                battery_cycles=0,
+                accessories=["Lacrado oficial Dell", "Garantia 1 ano", "Carregador 330W"],
+                raw_description="Desempenho gráfico de última geração com RTX 4050 (DLSS 3 e Ray Tracing), tela rápida de 165Hz e 100% sRGB para games e renderização 3D.",
+            ),
+
+            # 4. Dell Inspiron 15 Entrada (Catálogo Laptops Dell)
+            ComputerListing(
+                id="dell-cat-insp-04",
+                title="Dell Inspiron 15 Intel Core i3 12ª Geração 8GB RAM 256GB SSD Full HD",
+                brand="Dell",
+                condition="novo",
+                price=2699.0,
+                location="Loja Oficial Dell Brasil (Entrega Recife/PE)",
+                seller_type="loja_oficial",
+                source="Dell Brasil Catálogo de Laptops",
+                url="https://www.dell.com/pt-br/shop/laptop-computers/scr/laptop",
+                processor="Intel Core i3-1215U (6 núcleos, até 4.40 GHz)",
+                architecture="Intel x86",
+                ram_gb=8,
+                storage_gb=256,
+                storage_type="SSD NVMe",
+                screen_size_inches=15.6,
+                year=2023,
+                battery_health_pct=100,
+                battery_cycles=0,
+                accessories=["Lacrado oficial Dell", "Garantia 1 ano"],
+                raw_description="Notebook de entrada para escritório, estudos e navegação leve. Chassi com dobradiça elevatória ergonômica.",
+            ),
+
+            # 5. Dell XPS 13 Premium (Catálogo Laptops Dell)
+            ComputerListing(
+                id="dell-cat-xps-05",
+                title="Dell XPS 13 Intel Core Ultra 7 155H 16GB LPDDR5x 512GB SSD Tela 13.4'' FHD+ InfinityEdge",
+                brand="Dell",
+                condition="novo",
+                price=11999.0,
+                location="Loja Oficial Dell Brasil (Entrega Recife/PE)",
+                seller_type="loja_oficial",
+                source="Dell Brasil Catálogo de Laptops",
+                url="https://www.dell.com/pt-br/shop/laptop-computers/scr/laptop",
+                processor="Intel Core Ultra 7 155H (16 núcleos, NPU para Inteligência Artificial)",
+                architecture="Intel x86",
+                ram_gb=16,
+                storage_gb=512,
+                storage_type="SSD NVMe",
+                screen_size_inches=13.4,
+                year=2024,
+                battery_health_pct=100,
+                battery_cycles=0,
+                accessories=["Lacrado oficial Dell", "Garantia Dell Premium Support 1 ano"],
+                raw_description="Ultrabook premium da Dell usinado em alumínio CNC e fibra de carbono, NPU integrada para IA, autonomia de até 18 horas e peso pluma de 1.19 kg.",
+            ),
+
+            # 6. Dell XPS 16 Workstation Topo de Linha (Catálogo Laptops Dell)
+            ComputerListing(
+                id="dell-cat-xps-06",
+                title="Dell XPS 16 Intel Core Ultra 9 185H 32GB RAM 1TB SSD NVIDIA GeForce RTX 4060 Tela 4K OLED Touch",
+                brand="Dell",
+                condition="novo",
+                price=18999.0,
+                location="Loja Oficial Dell Brasil (Entrega Recife/PE)",
+                seller_type="loja_oficial",
+                source="Dell Brasil Catálogo de Laptops",
+                url="https://www.dell.com/pt-br/shop/laptop-computers/scr/laptop",
+                processor="Intel Core Ultra 9 185H (16 núcleos, até 5.1 GHz) + RTX 4060 8GB",
+                architecture="Intel x86",
+                ram_gb=32,
+                storage_gb=1024,
+                storage_type="SSD NVMe",
+                screen_size_inches=16.3,
+                year=2024,
+                battery_health_pct=100,
+                battery_cycles=0,
+                accessories=["Lacrado oficial Dell", "Carregador 130W USB-C", "Garantia 1 ano Premium Support"],
+                raw_description="Workstation topo de linha para engenharia, arquitetura e cinema. Tela 4K+ OLED sensível ao toque, 32GB de RAM rápida e acabamento ultra-refinado.",
+            ),
+
+            # === APPLE MACBOOKS NOVOS (RETAIL OFICIAL) ===
+
+            # 7. MacBook Air M1 8GB 256GB
             ComputerListing(
                 id="new-ret-m1-01",
                 title="MacBook Air 13'' M1 8GB 256GB Cinza Espacial - Novo Lacrado com Garantia Apple 1 Ano",
+                brand="Apple",
                 condition="novo",
                 price=5799.0,
                 location="Entrega Expressa Recife/PE (Centro de Distribuição Nordeste)",
@@ -40,10 +190,11 @@ class NewScoutAgent:
                 raw_description="Produto 100% original lacrado com NF-e e garantia oficial Apple de 1 ano. Envio imediato para Recife.",
             ),
 
-            # 2. Intermediário Novo: MacBook Air M2 13'' 8GB 256GB
+            # 8. MacBook Air M2 13'' 8GB 256GB
             ComputerListing(
                 id="new-ret-m2-02",
                 title="MacBook Air 13'' M2 8GB 256GB Meia-noite - Novo Lacrado",
+                brand="Apple",
                 condition="novo",
                 price=7299.0,
                 location="Entrega Recife/PE (Frete Prime)",
@@ -63,33 +214,11 @@ class NewScoutAgent:
                 raw_description="Design moderno com chip M2, tela Liquid Retina de 13.6 polegadas, FaceTime 1080p, MagSafe 3.",
             ),
 
-            # 3. Intermediário Avançado Novo: MacBook Air 13'' M3 16GB 512GB
-            ComputerListing(
-                id="new-ret-m3-03",
-                title="MacBook Air 13'' M3 16GB RAM 512GB SSD Meia-noite - Novo Lacrado",
-                condition="novo",
-                price=10499.0,
-                location="Entrega Expressa Recife/PE (Fast Shop)",
-                seller_type="loja_oficial",
-                source="Fast Shop Oficial",
-                url="https://www.amazon.com.br/s?k=macbook+air+m3+16gb",
-                processor="Apple M3 (8-core CPU, 10-core GPU)",
-                architecture="Apple Silicon",
-                ram_gb=16,
-                storage_gb=512,
-                storage_type="SSD NVMe",
-                screen_size_inches=13.6,
-                year=2024,
-                battery_health_pct=100,
-                battery_cycles=0,
-                accessories=["Lacrado na caixa", "Garantia Apple 1 ano", "Carregador 35W Dual USB-C"],
-                raw_description="Chip M3 de última geração com Ray Tracing por hardware, suporte a dois monitores externos, 16GB de memória unificada.",
-            ),
-
-            # 4. Pro Novo: MacBook Pro 14'' M3 Pro 18GB 512GB
+            # 9. MacBook Pro 14'' M3 Pro 18GB 512GB
             ComputerListing(
                 id="new-ret-m3pro-04",
                 title="MacBook Pro 14'' M3 Pro 18GB 512GB Preto Espacial - Novo Lacrado",
+                brand="Apple",
                 condition="novo",
                 price=16899.0,
                 location="iPlace Shopping Recife (Pronta Entrega)",
@@ -107,29 +236,6 @@ class NewScoutAgent:
                 battery_cycles=0,
                 accessories=["Lacrado na caixa", "Garantia Apple 1 ano", "Carregador 70W USB-C"],
                 raw_description="Pronta entrega física em Recife no Shopping Recife. Desempenho profissional para edição e engenharia pesada.",
-            ),
-
-            # 5. Topo de Linha Novo: MacBook Pro 16'' M4 Pro 24GB 512GB
-            ComputerListing(
-                id="new-ret-m4pro-05",
-                title="MacBook Pro 16'' M4 Pro 24GB RAM 512GB SSD Preto Espacial - Lançamento",
-                condition="novo",
-                price=22499.0,
-                location="Entrega Recife/PE (Apple Store Oficial)",
-                seller_type="loja_oficial",
-                source="Apple Store Brasil",
-                url="https://www.apple.com/br/shop/buy-mac/macbook-pro/16-polegadas-m4-pro",
-                processor="Apple M4 Pro (14-core CPU, 20-core GPU)",
-                architecture="Apple Silicon",
-                ram_gb=24,
-                storage_gb=512,
-                storage_type="SSD NVMe",
-                screen_size_inches=16.2,
-                year=2024,
-                battery_health_pct=100,
-                battery_cycles=0,
-                accessories=["Lacrado oficial Apple", "Garantia mundial 1 ano", "Carregador 140W USB-C"],
-                raw_description="Chip de última geração M4 Pro com até 24 horas de bateria, Thunderbolt 5 com transferências até 120 Gb/s, tela XDR com opção nanotexture.",
             )
         ]
 
