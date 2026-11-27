@@ -34,8 +34,11 @@ Este documento consolida os aprendizados técnicos, de engenharia de dados, de a
 - **Tratamento de Anti-Bot (Cloudflare)**:
   A OLX protege suas rotas com Cloudflare Bot Management (HTTP 403 para requisições de datacenter/crawlers automatizados), enquanto no navegador nativo do usuário a navegação flui normalmente. As URLs validadas devem preservar o padrão esperado pelo navegador desktop.
 
-### C. Dell Brasil & Grandes Varejistas
-- Páginas de campanha oficial (`/shop/deals/dc/black-friday-deals`) e catálogo de linhas (`/shop/laptop-computers/scr/laptop`) fornecem rotas permanentes de alta confiabilidade com garantia oficial em domicílio (on-site).
+### C. Dell Brasil, Grandes Varejistas & Comércio Especializado no Recife
+- **Dell Brasil Oficial**: Páginas de campanha oficial (`/shop/deals/dc/black-friday-deals`) e catálogo de linhas (`/shop/laptop-computers/scr/laptop`) fornecem rotas permanentes de alta confiabilidade com garantia oficial em domicílio (on-site).
+- **Nagem Informática (`nagem.com.br`)**: Gigante regional pernambucana. A URL `/navegacao/Informatica/Notebooks` permite rastrear estoques com a vantagem da retirada expressa em até 2 horas nos shopping centers de Recife (Shopping Recife, RioMar, Tacaruna, Plaza).
+- **Techno Space (`technospace.com.br`)**: Loja física especializada em Boa Viagem (Av. Conselheiro Aguiar). Excelente canal para negociação com desconto à vista no Pix e retirada presencial de modelos Dell Inspiron e Gamer.
+- **Infohouse Express (`infohouse.com.br`)**: Loja e bancada técnica tradicional em Boa Viagem (Av. Eng. Domingos Ferreira). O rastreamento revelou que a Infohouse não atua como revendedora massiva de notebooks novos lacrados de fábrica, mas sim como um **polo indispensável de suporte técnico, manutenção preventiva, diagnósticos e upgrades de SSD NVMe e memória RAM** para o mercado recifense.
 
 ---
 

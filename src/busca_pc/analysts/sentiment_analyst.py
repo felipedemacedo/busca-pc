@@ -152,6 +152,14 @@ class SentimentAnalystAgent:
             consensus = "Avaliações majoritariamente positivas na média da categoria."
             sentiment_score = 75.0
 
+        # Vantagens de Lojas Locais Físicas em Recife
+        if "NAGEM" in listing.source.upper() or "NAGEM" in listing.location.upper():
+            pros.append("Rede física líder em Pernambuco (Nagem): retirada expressa nos shoppings de Recife e suporte direto")
+        elif "TECHNO" in listing.source.upper() or "TECHNO" in listing.location.upper():
+            pros.append("Loja especializada em Boa Viagem (Techno Space): pronta entrega com desconto no Pix e atendimento presencial")
+        elif "INFOHOUSE" in listing.source.upper() or "INFOHOUSE" in listing.location.upper():
+            pros.append("Bancada técnica própria em Boa Viagem (Infohouse): máquina revisada com garantia e laudo de upgrade")
+
         summary = (
             f"Laudo de Comunidade: Nota {sentiment_score}/100. Confiabilidade: {verdict}. "
             f"Defeitos crônicos mapeados: {len(chronic_flaws)}. Consenso: {consensus[:120]}..."
