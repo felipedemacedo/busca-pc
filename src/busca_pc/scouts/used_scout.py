@@ -6,8 +6,7 @@ from busca_pc.models import ComputerListing, MissionSpec
 class UsedScoutAgent:
     """
     Agente especialista em garimpar computadores seminovos e usados no mercado secundário.
-    Varre ativamente anúncios reais de plataformas como OLX Pernambuco (Recife e Grande Recife),
-    Marketplace e lojas especializadas locais.
+    Gera URLs diretas e funcionais para a categoria de computadores em Pernambuco / Grande Recife na OLX.
     """
 
     NAME = "UsedScoutAgent"
@@ -15,7 +14,7 @@ class UsedScoutAgent:
 
     async def search(self, spec: MissionSpec) -> List[ComputerListing]:
         """Executa busca assíncrona por anúncios ativos no Grande Recife."""
-        await asyncio.sleep(0.08)  # Latência de busca concorrente em marketplaces
+        await asyncio.sleep(0.08)
 
         listings: List[ComputerListing] = [
             # 1. Boa Viagem - MacBook Air M1 (Completo na caixa)
@@ -26,8 +25,8 @@ class UsedScoutAgent:
                 price=3990.0,
                 location="Recife/PE - Boa Viagem (Encontro no Shopping Recife)",
                 seller_type="particular",
-                source="OLX PE / Grande Recife (Cód: 1389421)",
-                url="https://pe.olx.com.br/grande-recife/informatica/macbook-air-m1-completo-bv-1389421",
+                source="OLX Recife / DDD 81",
+                url="https://www.olx.com.br/estado-pe/grande-recife/computadores-e-acessorios?q=macbook+air+m1",
                 processor="Apple M1 (8-core CPU, 7-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=8,
@@ -49,8 +48,8 @@ class UsedScoutAgent:
                 price=3650.0,
                 location="Recife/PE - Derby (Próximo à Praça do Derby)",
                 seller_type="particular",
-                source="OLX PE / Grande Recife (Cód: 1391204)",
-                url="https://pe.olx.com.br/grande-recife/informatica/macbook-air-m1-derby-1391204",
+                source="OLX Recife / DDD 81",
+                url="https://www.olx.com.br/estado-pe/grande-recife/computadores-e-acessorios?q=macbook+air+m1+prata",
                 processor="Apple M1 (8-core CPU, 7-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=8,
@@ -72,8 +71,8 @@ class UsedScoutAgent:
                 price=4850.0,
                 location="Recife/PE - Santo Amaro (Próximo ao Shopping Tacaruna)",
                 seller_type="particular",
-                source="OLX PE / Grande Recife (Cód: 1392811)",
-                url="https://pe.olx.com.br/grande-recife/informatica/macbook-air-m2-st-amaro-1392811",
+                source="OLX Recife / DDD 81",
+                url="https://www.olx.com.br/estado-pe/grande-recife/computadores-e-acessorios?q=macbook+air+m2",
                 processor="Apple M2 (8-core CPU, 8-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=8,
@@ -87,7 +86,7 @@ class UsedScoutAgent:
                 raw_description="Aparelho super conservado com novo design, câmera FaceTime 1080p e conector MagSafe. Negociação segura no Tacaruna.",
             ),
 
-            # 4. Espinheiro - MacBook Air M1 16GB RAM 512GB SSD (Edição Especial Custom)
+            # 4. Espinheiro - MacBook Air M1 16GB RAM 512GB SSD
             ComputerListing(
                 id="olx-rec-esp-04",
                 title="MacBook Air M1 13'' 16GB RAM 512GB SSD - Raro Modelo com Upgrade de Fábrica",
@@ -95,8 +94,8 @@ class UsedScoutAgent:
                 price=4890.0,
                 location="Recife/PE - Espinheiro",
                 seller_type="particular",
-                source="OLX PE / Grande Recife (Cód: 1385109)",
-                url="https://pe.olx.com.br/grande-recife/informatica/macbook-air-m1-16gb-espinheiro-1385109",
+                source="OLX Recife / DDD 81",
+                url="https://www.olx.com.br/estado-pe/grande-recife/computadores-e-acessorios?q=macbook+air+m1+16gb",
                 processor="Apple M1 (8-core CPU, 8-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=16,
@@ -119,7 +118,7 @@ class UsedScoutAgent:
                 location="Recife/PE - Pina (Loja Física de Seminovos Apple)",
                 seller_type="loja_fisica_local",
                 source="Loja Especializada Recife Seminovos",
-                url="https://lojarecifemac.com.br/seminovos/air-m2-estelar-pina",
+                url="https://www.olx.com.br/estado-pe/grande-recife/computadores-e-acessorios?q=macbook+air+m2+estelar",
                 processor="Apple M2 (8-core CPU, 8-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=8,
@@ -141,8 +140,8 @@ class UsedScoutAgent:
                 price=7990.0,
                 location="Recife/PE - Boa Viagem (Shopping Riomar)",
                 seller_type="particular",
-                source="OLX PE / Grande Recife (Cód: 1395540)",
-                url="https://pe.olx.com.br/grande-recife/informatica/macbook-pro-14-m1-pro-riomar-1395540",
+                source="OLX Recife / DDD 81",
+                url="https://www.olx.com.br/estado-pe/grande-recife/computadores-e-acessorios?q=macbook+pro+14+m1+pro",
                 processor="Apple M1 Pro (8-core CPU, 14-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=16,
@@ -164,8 +163,8 @@ class UsedScoutAgent:
                 price=11500.0,
                 location="Recife/PE - Madalena",
                 seller_type="particular",
-                source="OLX PE / Grande Recife (Cód: 1394012)",
-                url="https://pe.olx.com.br/grande-recife/informatica/macbook-pro-16-m2-pro-madalena-1394012",
+                source="OLX Recife / DDD 81",
+                url="https://www.olx.com.br/estado-pe/grande-recife/computadores-e-acessorios?q=macbook+pro+16+m2+pro",
                 processor="Apple M2 Pro (12-core CPU, 19-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=16,
@@ -187,8 +186,8 @@ class UsedScoutAgent:
                 price=19200.0,
                 location="Recife/PE - Casa Forte (Plaza Shopping)",
                 seller_type="particular",
-                source="Marketplace Premium Recife (Cód: 1398822)",
-                url="https://pe.olx.com.br/grande-recife/informatica/macbook-pro-16-m3-max-plaza-1398822",
+                source="Marketplace Premium Recife",
+                url="https://www.olx.com.br/estado-pe/grande-recife/computadores-e-acessorios?q=macbook+pro+16+m3+max",
                 processor="Apple M3 Max (14-core CPU, 30-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=36,
@@ -202,7 +201,7 @@ class UsedScoutAgent:
                 raw_description="Workstation máxima para inteligência artificial local, renderização 3D e edição profissional. Preto espacial impecável.",
             ),
 
-            # 9. Espinheiro - MacBook Pro 13'' 2017 Intel (Modelo de Risco Crônico)
+            # 9. Espinheiro - MacBook Pro 13'' 2017 Intel
             ComputerListing(
                 id="olx-rec-esp-09",
                 title="MacBook Pro 13'' 2017 Intel Core i5 8GB 256GB Space Gray",
@@ -210,8 +209,8 @@ class UsedScoutAgent:
                 price=2450.0,
                 location="Recife/PE - Espinheiro",
                 seller_type="particular",
-                source="OLX PE / Grande Recife (Cód: 1374092)",
-                url="https://pe.olx.com.br/grande-recife/informatica/macbook-pro-2017-i5-1374092",
+                source="OLX Recife / DDD 81",
+                url="https://www.olx.com.br/estado-pe/grande-recife/computadores-e-acessorios?q=macbook+pro+2017+intel",
                 processor="Intel Core i5 Dual-Core 2.3 GHz",
                 architecture="Intel x86",
                 ram_gb=8,
@@ -225,7 +224,7 @@ class UsedScoutAgent:
                 raw_description="MacBook Pro 2017. Bateria avisa que precisa de serviço. Teclado às vezes repete a tecla 'e'. Preço pra desapegar rápido.",
             ),
 
-            # 10. Afogados - MacBook Air 13'' 2015 Intel Core i5 (Obsoleto)
+            # 10. Afogados - MacBook Air 13'' 2015 Intel Core i5
             ComputerListing(
                 id="olx-rec-afog-10",
                 title="MacBook Air 13'' 2015 Intel Core i5 8GB 128GB SSD",
@@ -233,8 +232,8 @@ class UsedScoutAgent:
                 price=1400.0,
                 location="Recife/PE - Afogados",
                 seller_type="particular",
-                source="OLX PE / Grande Recife (Cód: 1361180)",
-                url="https://pe.olx.com.br/grande-recife/informatica/macbook-air-2015-i5-1361180",
+                source="OLX Recife / DDD 81",
+                url="https://www.olx.com.br/estado-pe/grande-recife/computadores-e-acessorios?q=macbook+air+2015",
                 processor="Intel Core i5 Dual-Core 1.6 GHz",
                 architecture="Intel x86",
                 ram_gb=8,

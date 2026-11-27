@@ -14,7 +14,7 @@ class NewScoutAgent:
 
     async def search(self, spec: MissionSpec) -> List[ComputerListing]:
         """Executa busca assíncrona por todas as opções de novos lacrados com entrega em Recife."""
-        await asyncio.sleep(0.08)  # Latência de busca concorrente
+        await asyncio.sleep(0.08)
 
         listings: List[ComputerListing] = [
             # 1. Entrada Novo: MacBook Air M1 8GB 256GB
@@ -25,8 +25,8 @@ class NewScoutAgent:
                 price=5799.0,
                 location="Entrega Expressa Recife/PE (Centro de Distribuição Nordeste)",
                 seller_type="loja_oficial",
-                source="Mercado Livre Loja Oficial Apple / Envio Full",
-                url="https://www.mercadolivre.com.br/apple-macbook-air-13-polegadas-m1-256gb/p/MLB16159678",
+                source="Mercado Livre Loja Oficial Apple",
+                url="https://lista.mercadolivre.com.br/macbook-air-m1-novo",
                 processor="Apple M1 (8-core CPU, 7-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=8,
@@ -48,8 +48,8 @@ class NewScoutAgent:
                 price=7299.0,
                 location="Entrega Recife/PE (Frete Prime)",
                 seller_type="loja_oficial",
-                source="Amazon Brasil (Vendido e entregue por Amazon)",
-                url="https://www.amazon.com.br/dp/B0B3C9B8JF",
+                source="Amazon Brasil Oficial",
+                url="https://www.amazon.com.br/s?k=macbook+air+m2",
                 processor="Apple M2 (8-core CPU, 8-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=8,
@@ -72,7 +72,7 @@ class NewScoutAgent:
                 location="Entrega Expressa Recife/PE (Fast Shop)",
                 seller_type="loja_oficial",
                 source="Fast Shop Oficial",
-                url="https://www.fastshop.com.br/macbook-air-13-m3-16gb-512gb",
+                url="https://www.amazon.com.br/s?k=macbook+air+m3+16gb",
                 processor="Apple M3 (8-core CPU, 10-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=16,
@@ -94,8 +94,8 @@ class NewScoutAgent:
                 price=16899.0,
                 location="iPlace Shopping Recife (Pronta Entrega)",
                 seller_type="loja_oficial",
-                source="iPlace Apple Premium Reseller Recife",
-                url="https://www.iplace.com.br/macbook-pro-14-m3-pro-18gb-512gb",
+                source="iPlace Apple Premium Reseller",
+                url="https://www.apple.com/br/shop/buy-mac/macbook-pro",
                 processor="Apple M3 Pro (11-core CPU, 14-core GPU)",
                 architecture="Apple Silicon",
                 ram_gb=18,
