@@ -22,7 +22,7 @@ class PCClassifierAgent:
         """Emite o laudo final consolidado e a nota precisa para o computador."""
 
         # 1. Nota Composta de Qualidade do Produto (0 - 100)
-        composite_quality = (hw_audit.hardware_score * 0.55) + (sent_audit.sentiment_score * 0.45)
+        composite_quality = (hw_audit.hardware_score * 0.52) + (sent_audit.sentiment_score * 0.48)
 
         # 2. Definição do Preço de Referência Específico de Mercado
         fair_price = self._determine_benchmark_price(listing)
@@ -30,23 +30,26 @@ class PCClassifierAgent:
         # 3. Análise de Preço e Desconto Relativo
         price_delta_pct = ((fair_price - listing.price) / fair_price) * 100.0
 
-        # 4. Cálculo do Índice de Custo-Benefício (ICB)
-        price_ratio = fair_price / max(listing.price, 1.0)
-        price_multiplier = min(1.35, max(0.5, price_ratio ** 0.65))
+        # 4. Cálculo Rigoroso do Índice de Custo-Benefício (ICB)
+        # 4.1 Fator de Preço Absoluto: Desincentiva compras de valor desproporcional (lei dos rendimentos decrescentes)
+        # R$ 3.000 -> 1.08; R$ 5.000 -> 1.02; R$ 8.000 -> 0.92; R$ 12.000 -> 0.80; R$ 19.000 -> 0.58
+        price_factor = max(0.55, 1.10 - (max(0.0, listing.price - 2500.0) / 32000.0))
 
-        raw_cbi = composite_quality * price_multiplier
+        # 4.2 Fator Desconto de Mercado (em relação ao valor justo da configuração em Recife)
+        discount_factor = 1.0 + ((price_delta_pct / 100.0) * 0.75)
+
+        # 4.3 Ajuste de condição: produto novo lacrado com garantia de fabricante de 12 meses
+        cond_multiplier = 1.04 if listing.condition == "novo" else 1.0
+
+        raw_cbi = composite_quality * price_factor * discount_factor * cond_multiplier
 
         # Penalidade drástica para produtos com alto risco crônico ou obsolescência (ex: Intel butterfly/flexgate em Mac antigo)
-        if "Alto Risco" in sent_audit.reliability_verdict or hw_audit.tier_category == "Obsoleto":
-            raw_cbi = min(raw_cbi * 0.35, 30.0)
-
-        # Ajuste de condição: produtos novos têm garantia total de fábrica
-        if listing.condition == "novo":
-            raw_cbi = min(raw_cbi * 1.05, 98.0)
+        if "Alto Risco" in sent_audit.reliability_verdict or hw_audit.tier_category == "Obsoleto" or sent_audit.sentiment_score <= 30.0:
+            raw_cbi = min(raw_cbi * 0.20, 20.0)
 
         cbi_score = round(max(0.0, min(100.0, raw_cbi)), 1)
 
-        # 5. Atribuição de Tier e Veredito
+        # 5. Atribuição de Tier e Veredito Seletivos
         tier, verdict = self._determine_tier_and_verdict(cbi_score, sent_audit, hw_audit, price_delta_pct)
 
         # 6. Justificativa Técnica
@@ -128,17 +131,17 @@ class PCClassifierAgent:
         hw_audit: HardwareAudit,
         price_delta_pct: float
     ) -> tuple[str, str]:
-        if "Alto Risco" in sent_audit.reliability_verdict or hw_audit.tier_category == "Obsoleto":
+        if "Alto Risco" in sent_audit.reliability_verdict or hw_audit.tier_category == "Obsoleto" or sent_audit.sentiment_score <= 30.0:
             return "F", "Evitar Absolutamente"
 
-        if cbi >= 90.0:
+        if cbi >= 88.0:
             return "S", "Altamente Recomendado"
         elif cbi >= 78.0:
-            return "A", "Bom Negócio"
-        elif cbi >= 64.0:
-            return "B", "Neutro"
-        elif cbi >= 48.0:
-            return "C", "Desaconselhado"
+            return "A", "Altamente Recomendado"
+        elif cbi >= 66.0:
+            return "B", "Bom Negócio"
+        elif cbi >= 45.0:
+            return "C", "Neutro"
         else:
             return "F", "Evitar Absolutamente"
 

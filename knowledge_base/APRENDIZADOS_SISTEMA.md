@@ -80,3 +80,33 @@ Este documento consolida os aprendizados técnicos, de engenharia de dados, de a
   Sliders de preço dinâmicos (mínimo e máximo), ordenação por menor preço e alternância por marca (**Todas, Apple, Dell**) e condição (**Todos, Usados, Novos**).
 - **Acesso Direto ao Anúncio**:
   Botão com link direto tanto na face do card do carrossel quanto no modal detalhado de inspeção técnica.
+
+---
+
+## 6. Calibração Rigorosa de Classificação & Índice de Custo-Benefício (Anti-Saturação)
+
+### Problema Anterior de Inflação de Notas:
+Com fórmulas aditivas simples, quase qualquer máquina moderna alcançava Nota de Hardware 100/100 e ICB 98-100 (Tier S), criando saturação e impedindo o usuário de distinguir verdadeiras oportunidades de compras com custo-benefício mediano.
+
+### Nova Modelagem Matemática Implementada:
+
+1. **Hardware Analyst Modular (Teto Máximo 100 Pontos)**:
+   - **CPU / SoC (Máx 40 pts)**: Apple Silicon M1 (26 pts), M2 / A18 Pro (29-30 pts), Core Ultra 7 (32 pts), M1/M2/M3 Pro (34 pts), Core Ultra 9 (36 pts), M3/M4 Max (40 pts), Intel Mac antigo (6 a 10 pts).
+   - **GPU / Aceleração Gráfica (Máx 24 pts)**: Gráficos integrados Intel básicos (4 a 8 pts), M1/Arc (14 pts), M2/A18 (16 pts), RTX 3050 (17 pts), M-Pro/RTX 4050 (20 pts), RTX 4060 / M3 Max (24 pts).
+   - **Memória RAM (Máx 20 pts)**: 8GB legado (5-6 pts), 8GB Apple Silicon/DDR5 (9-10 pts), 16GB (16 pts), 32GB+ (20 pts).
+   - **Armazenamento SSD (Máx 10 pts)**: 128GB (2 pts), 256GB (5 pts), 512GB (8 pts), 1TB+ (10 pts).
+   - **Display & Ergonomia (Máx 6 pts)**: 60Hz básico (2 pts), 120Hz/Liquid Retina (4 pts), 165Hz gamer sRGB (4.5 pts), Liquid Retina XDR 120Hz (5.5 pts), 4K OLED (6 pts).
+
+2. **Índice de Custo-Benefício (ICB) com Rendimentos Decrescentes**:
+   - **Qualidade Composta**: `(Nota_Hardware × 0.52) + (Nota_Sentimento × 0.48)`.
+   - **Fator Preço Absoluto**: Aplica a lei dos rendimentos decrescentes: `max(0.55, 1.10 - (max(0, preco - 2500) / 32000))`. Notebooks de R$ 16.000 a R$ 20.000 (como XPS 16 OLED ou MacBook Pro M3 Max) entregam hardware fantástico, mas menor utilidade por real investido para o consumidor geral.
+   - **Fator Desconto de Mercado**: `1.0 + ((desconto_pct / 100) × 0.75)`, premiando anúncios substancialmente abaixo da cotação justa de Recife.
+   - **Penalidade Drástica Anti-Prejuízo**: Falhas crônicas ou obsolescência limitam o ICB a no máximo 20.0 pontos (Tier F).
+
+3. **Distribuição Equilibrada de Tiers**:
+   - **Tier S (ICB ≥ 88.0)**: ~18% do catálogo. Oportunidades excepcionais (ex: MacBook Air M2 seminovo com 21.8% de desconto a R$ 4.850, Dell G15 RTX 3050 novo a R$ 5.299).
+   - **Tier A (78.0 ≤ ICB < 88.0)**: ~40% do catálogo. Altamente recomendados com preços alinhados à cotação justa.
+   - **Tier B (66.0 ≤ ICB < 78.0)**: ~19% do catálogo. Bons negócios com configurações de entrada ou intermediárias.
+   - **Tier C (45.0 ≤ ICB < 66.0)**: ~11% do catálogo. Máquinas ultra-top de linha caras com baixo retorno por real.
+   - **Tier F (ICB < 45.0 ou falha crônica)**: ~11% do catálogo. Equipamentos reprovados tecnicamente.
+
