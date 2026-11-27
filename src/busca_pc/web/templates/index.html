@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Busca-PC | Minimalist</title>
+  <title>Busca-PC | Analista Agêntico de Computadores</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js para efeitos 3D suaves -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- Alpine.js -->
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -22,15 +21,233 @@
           }
         }
       }
+    };
+
+    // Definição do Componente Alpine ANTES do carregamento da biblioteca para evitar erros
+    function carouselApp() {
+      return {
+        items: [],
+        filterOpen: false,
+        detailOpen: false,
+        selectedItem: null,
+        currentIndex: 0,
+        filters: {
+          minPrice: 1000,
+          maxPrice: 25000,
+          sortByPrice: false,
+          priceOrder: 'asc',
+          condition: 'todos'
+        },
+
+        async initApp() {
+          await this.fetchData();
+          try {
+            this.initThreeJS();
+          } catch (err) {
+            console.warn('Three.js warning:', err);
+          }
+          this.setupKeyboardNavigation();
+        },
+
+        async fetchData() {
+          try {
+            const res = await fetch('/api/listings');
+            const json = await res.json();
+            this.items = json.data || [];
+          } catch (e) {
+            console.error('Erro ao carregar dados:', e);
+          }
+        },
+
+        get filteredItems() {
+          if (!this.items || !this.items.length) return [];
+          let list = [...this.items];
+
+          const min = Number(this.filters.minPrice) || 0;
+          const max = Number(this.filters.maxPrice) || 999999;
+
+          // Filtro de Preço
+          list = list.filter(item => {
+            const p = Number(item.price) || 0;
+            return p >= min && p <= max;
+          });
+
+          // Filtro de Condição
+          if (this.filters.condition === 'usados') {
+            list = list.filter(item => item.condition === 'usado' || item.condition === 'seminovo');
+          } else if (this.filters.condition === 'novos') {
+            list = list.filter(item => item.condition === 'novo');
+          }
+
+          // Ordenação
+          if (this.filters.sortByPrice) {
+            list.sort((a, b) => {
+              const pa = Number(a.price) || 0;
+              const pb = Number(b.price) || 0;
+              return this.filters.priceOrder === 'asc' ? pa - pb : pb - pa;
+            });
+          } else {
+            // Padrão: Ordenar por Nota de Custo-Benefício decrescente
+            list.sort((a, b) => {
+              const scoreA = Number(a.classification?.cost_benefit_index) || 0;
+              const scoreB = Number(b.classification?.cost_benefit_index) || 0;
+              return scoreB - scoreA;
+            });
+          }
+
+          return list;
+        },
+
+        scrollCarousel(dir) {
+          const container = document.getElementById('carousel');
+          if (!container) return;
+          const scrollAmount = 380;
+          if (dir === 'left') {
+            container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            this.currentIndex = Math.max(0, this.currentIndex - 1);
+          } else {
+            container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            this.currentIndex = Math.min(this.filteredItems.length - 1, this.currentIndex + 1);
+          }
+        },
+
+        onWheel(e) {
+          const container = document.getElementById('carousel');
+          if (container) {
+            container.scrollLeft += e.deltaY;
+          }
+        },
+
+        setupKeyboardNavigation() {
+          window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') this.scrollCarousel('left');
+            if (e.key === 'ArrowRight') this.scrollCarousel('right');
+          });
+        },
+
+        hasActiveFilters() {
+          return this.filters.maxPrice < 25000 || this.filters.minPrice > 1000 || this.filters.sortByPrice || this.filters.condition !== 'todos';
+        },
+
+        resetFilters() {
+          this.filters.minPrice = 1000;
+          this.filters.maxPrice = 25000;
+          this.filters.sortByPrice = false;
+          this.filters.priceOrder = 'asc';
+          this.filters.condition = 'todos';
+        },
+
+        openDetail(item) {
+          this.selectedItem = item;
+          this.detailOpen = true;
+        },
+
+        formatCurrency(v) {
+          if (!v) return 'R$ 0,00';
+          return Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+        },
+
+        // Efeito Suave Three.js com partículas 3D e rotação orgânica
+        initThreeJS() {
+          const canvas = document.getElementById('three-canvas');
+          if (!canvas || !window.THREE) return;
+
+          const scene = new THREE.Scene();
+          const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+          camera.position.z = 25;
+
+          const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+          renderer.setSize(window.innerWidth, window.innerHeight);
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+          // Geometria de partículas 3D flutuantes
+          const particleCount = 200;
+          const geometry = new THREE.BufferGeometry();
+          const positions = new Float32Array(particleCount * 3);
+          const colors = new Float32Array(particleCount * 3);
+
+          const color1 = new THREE.Color('#10b981'); // Emerald
+          const color2 = new THREE.Color('#06b6d4'); // Cyan
+
+          for (let i = 0; i < particleCount * 3; i += 3) {
+            positions[i] = (Math.random() - 0.5) * 55;
+            positions[i + 1] = (Math.random() - 0.5) * 55;
+            positions[i + 2] = (Math.random() - 0.5) * 35;
+
+            const mixedColor = color1.clone().lerp(color2, Math.random());
+            colors[i] = mixedColor.r;
+            colors[i + 1] = mixedColor.g;
+            colors[i + 2] = mixedColor.b;
+          }
+
+          geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+          geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+          const material = new THREE.PointsMaterial({
+            size: 0.32,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.65,
+            blending: THREE.AdditiveBlending
+          });
+
+          const particleSystem = new THREE.Points(geometry, material);
+          scene.add(particleSystem);
+
+          // Anel 3D Torus sutil flutuando ao fundo
+          const torusGeo = new THREE.TorusGeometry(12, 0.08, 16, 100);
+          const torusMat = new THREE.MeshBasicMaterial({ color: 0x10b981, wireframe: true, transparent: true, opacity: 0.12 });
+          const torus = new THREE.Mesh(torusGeo, torusMat);
+          torus.rotation.x = Math.PI / 3;
+          scene.add(torus);
+
+          // Interação suave com o mouse
+          let mouseX = 0, mouseY = 0;
+          window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth - 0.5) * 0.4;
+            mouseY = (e.clientY / window.innerHeight - 0.5) * 0.4;
+          });
+
+          // Loop de animação suave
+          const animate = () => {
+            requestAnimationFrame(animate);
+            particleSystem.rotation.y += 0.0008;
+            particleSystem.rotation.x += 0.0004;
+
+            torus.rotation.z += 0.001;
+            torus.rotation.y += 0.0006;
+
+            camera.position.x += (mouseX * 5 - camera.position.x) * 0.03;
+            camera.position.y += (-mouseY * 5 - camera.position.y) * 0.03;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+          };
+          animate();
+
+          // Resize responsivo
+          window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+          });
+        }
+      };
     }
+
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('carouselApp', carouselApp);
+    });
   </script>
+
+  <!-- Alpine.js carregado com defer -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+
   <style>
     [x-cloak] { display: none !important; }
-    /* Esconde barra de rolagem mantendo a navegação suave */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     
-    /* Efeito de perspectiva para os cards do carrossel */
     .carousel-container {
       perspective: 1000px;
       scroll-behavior: smooth;
@@ -39,7 +256,7 @@
       transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.35s ease, box-shadow 0.35s ease;
     }
     .card-item:hover {
-      transform: translateY(-6px) scale(1.02);
+      transform: translateY(-8px) scale(1.02);
     }
     #three-canvas {
       position: fixed;
@@ -52,7 +269,7 @@
     }
   </style>
 </head>
-<body class="bg-darkbg text-slate-100 min-h-screen overflow-hidden flex flex-col justify-between selection:bg-emerald-500 selection:text-white" x-data="carouselApp()" x-init="initApp()" x-cloak>
+<body class="bg-darkbg text-slate-100 min-h-screen overflow-hidden flex flex-col justify-between selection:bg-emerald-500 selection:text-white" x-data="carouselApp()" x-init="initApp()">
 
   <!-- Canvas Three.js de Fundo 3D Interativo -->
   <canvas id="three-canvas"></canvas>
@@ -90,6 +307,7 @@
       <!-- Tooltip Popover com Slidebars e Ordenação -->
       <div 
         x-show="filterOpen" 
+        x-cloak
         @click.away="filterOpen = false"
         x-transition:enter="transition ease-out duration-200"
         x-transition:enter-start="opacity-0 translate-y-2 scale-95"
@@ -205,7 +423,7 @@
 
       <!-- Contador de Posição -->
       <div class="text-xs font-mono text-slate-400 bg-slate-900/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10">
-        <span class="text-white font-bold" x-text="currentIndex + 1"></span> / <span x-text="filteredItems.length"></span>
+        <span class="text-white font-bold" x-text="filteredItems.length ? currentIndex + 1 : 0"></span> / <span x-text="filteredItems.length"></span>
       </div>
 
       <button 
@@ -224,7 +442,7 @@
       
       <template x-for="(item, idx) in filteredItems" :key="item.id">
         <div 
-          class="card-item shrink-0 w-[300px] sm:w-[360px] bg-slate-900/80 backdrop-blur-2xl border border-white/15 rounded-3xl p-6 shadow-2xl flex flex-col justify-between cursor-pointer"
+          class="card-item shrink-0 w-[300px] sm:w-[360px] bg-slate-900/85 backdrop-blur-2xl border border-white/15 rounded-3xl p-6 shadow-2xl flex flex-col justify-between cursor-pointer"
           @click="openDetail(item)">
           
           <div>
@@ -323,15 +541,13 @@
           </div>
         </div>
       </template>
+    </div>
 
-      <!-- Estado Vazio -->
-      <template x-if="filteredItems.length === 0">
-        <div class="w-full text-center py-20 text-slate-400">
-          <i class="fa-solid fa-search text-3xl mb-3 text-slate-600"></i>
-          <p class="text-sm">Nenhum computador encontrado dentro desta faixa de preço.</p>
-          <button @click="resetFilters()" class="mt-3 px-4 py-1.5 bg-emerald-600 text-white rounded-full text-xs font-semibold">Restaurar Filtros</button>
-        </div>
-      </template>
+    <!-- Mensagem de Estado Vazio Caso Filtro Zere -->
+    <div x-show="filteredItems.length === 0" x-cloak class="text-center py-8 text-slate-400">
+      <i class="fa-solid fa-search text-2xl mb-2 text-slate-600"></i>
+      <p class="text-sm">Nenhum computador encontrado dentro desta faixa de preço.</p>
+      <button @click="resetFilters()" class="mt-2 px-4 py-1 bg-emerald-600 text-white rounded-full text-xs font-semibold">Restaurar Filtros</button>
     </div>
   </main>
 
@@ -347,6 +563,7 @@
   <!-- Modal Detalhado ao Clicar no Card -->
   <div 
     x-show="detailOpen" 
+    x-cloak
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md" 
     @click.self="detailOpen = false">
     
@@ -407,201 +624,5 @@
     </div>
   </div>
 
-  <!-- Script Alpine.js + Three.js Setup -->
-  <script>
-    function carouselApp() {
-      return {
-        items: [],
-        filterOpen: false,
-        detailOpen: false,
-        selectedItem: null,
-        currentIndex: 0,
-        filters: {
-          minPrice: 1000,
-          maxPrice: 25000,
-          sortByPrice: false,
-          priceOrder: 'asc',
-          condition: 'todos'
-        },
-
-        async initApp() {
-          await this.fetchData();
-          this.initThreeJS();
-          this.setupKeyboardNavigation();
-        },
-
-        async fetchData() {
-          try {
-            const res = await fetch('/api/listings');
-            const json = await res.json();
-            this.items = json.data || [];
-          } catch (e) {
-            console.error('Erro ao carregar dados:', e);
-          }
-        },
-
-        get filteredItems() {
-          let list = [...this.items];
-
-          // Filtro de Preço
-          list = list.filter(item => item.price >= this.filters.minPrice && item.price <= this.filters.maxPrice);
-
-          // Filtro de Condição
-          if (this.filters.condition === 'usados') {
-            list = list.filter(item => item.condition === 'usado' || item.condition === 'seminovo');
-          } else if (this.filters.condition === 'novos') {
-            list = list.filter(item => item.condition === 'novo');
-          }
-
-          // Ordenação
-          if (this.filters.sortByPrice) {
-            list.sort((a, b) => {
-              return this.filters.priceOrder === 'asc' ? a.price - b.price : b.price - a.price;
-            });
-          } else {
-            // Padrão: Ordenar por Nota de Custo-Benefício decrescente
-            list.sort((a, b) => (b.classification?.cost_benefit_index || 0) - (a.classification?.cost_benefit_index || 0));
-          }
-
-          return list;
-        },
-
-        scrollCarousel(dir) {
-          const container = document.getElementById('carousel');
-          if (!container) return;
-          const scrollAmount = 380;
-          if (dir === 'left') {
-            container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-            this.currentIndex = Math.max(0, this.currentIndex - 1);
-          } else {
-            container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-            this.currentIndex = Math.min(this.filteredItems.length - 1, this.currentIndex + 1);
-          }
-        },
-
-        onWheel(e) {
-          const container = document.getElementById('carousel');
-          if (container) {
-            container.scrollLeft += e.deltaY;
-          }
-        },
-
-        setupKeyboardNavigation() {
-          window.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') this.scrollCarousel('left');
-            if (e.key === 'ArrowRight') this.scrollCarousel('right');
-          });
-        },
-
-        hasActiveFilters() {
-          return this.filters.maxPrice < 25000 || this.filters.minPrice > 1000 || this.filters.sortByPrice || this.filters.condition !== 'todos';
-        },
-
-        resetFilters() {
-          this.filters.minPrice = 1000;
-          this.filters.maxPrice = 25000;
-          this.filters.sortByPrice = false;
-          this.filters.priceOrder = 'asc';
-          this.filters.condition = 'todos';
-        },
-
-        openDetail(item) {
-          this.selectedItem = item;
-          this.detailOpen = true;
-        },
-
-        formatCurrency(v) {
-          if (!v) return 'R$ 0,00';
-          return Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
-        },
-
-        // Efeito Suave Three.js com partículas 3D e rotação orgânica
-        initThreeJS() {
-          const canvas = document.getElementById('three-canvas');
-          if (!canvas || !window.THREE) return;
-
-          const scene = new THREE.Scene();
-          const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-          camera.position.z = 25;
-
-          const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-          renderer.setSize(window.innerWidth, window.innerHeight);
-          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-          // Geometria de partículas 3D flutuantes
-          const particleCount = 180;
-          const geometry = new THREE.BufferGeometry();
-          const positions = new Float32Array(particleCount * 3);
-          const colors = new Float32Array(particleCount * 3);
-
-          const color1 = new THREE.Color('#10b981'); // Emerald
-          const color2 = new THREE.Color('#06b6d4'); // Cyan
-
-          for (let i = 0; i < particleCount * 3; i += 3) {
-            positions[i] = (Math.random() - 0.5) * 50;
-            positions[i + 1] = (Math.random() - 0.5) * 50;
-            positions[i + 2] = (Math.random() - 0.5) * 30;
-
-            const mixedColor = color1.clone().lerp(color2, Math.random());
-            colors[i] = mixedColor.r;
-            colors[i + 1] = mixedColor.g;
-            colors[i + 2] = mixedColor.b;
-          }
-
-          geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-          geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-          const material = new THREE.PointsMaterial({
-            size: 0.28,
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.65,
-            blending: THREE.AdditiveBlending
-          });
-
-          const particleSystem = new THREE.Points(geometry, material);
-          scene.add(particleSystem);
-
-          // Anel 3D Torus sutil flutuando ao fundo
-          const torusGeo = new THREE.TorusGeometry(12, 0.08, 16, 100);
-          const torusMat = new THREE.MeshBasicMaterial({ color: 0x10b981, wireframe: true, transparent: true, opacity: 0.12 });
-          const torus = new THREE.Mesh(torusGeo, torusMat);
-          torus.rotation.x = Math.PI / 3;
-          scene.add(torus);
-
-          // Interação suave com o mouse
-          let mouseX = 0, mouseY = 0;
-          window.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 0.4;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 0.4;
-          });
-
-          // Loop de animação suave
-          const animate = () => {
-            requestAnimationFrame(animate);
-            particleSystem.rotation.y += 0.0008;
-            particleSystem.rotation.x += 0.0004;
-
-            torus.rotation.z += 0.001;
-            torus.rotation.y += 0.0006;
-
-            camera.position.x += (mouseX * 5 - camera.position.x) * 0.03;
-            camera.position.y += (-mouseY * 5 - camera.position.y) * 0.03;
-            camera.lookAt(scene.position);
-
-            renderer.render(scene, camera);
-          };
-          animate();
-
-          // Resize responsivo
-          window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-          });
-        }
-      }
-    }
-  </script>
 </body>
 </html>
