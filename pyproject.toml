@@ -1,0 +1,11 @@
+[project]
+name = "busca-pc"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "httpx>=0.29.0",
+    "pydantic>=2.14.4",
+    "rich>=15.0.0",
+]
