@@ -687,5 +687,128 @@
       "riomar",
       "protocolo_presencial"
     ]
+  },
+  {
+    "date": "2026-11-27",
+    "category": "Precificação e Custo-Benefício Local",
+    "title": "Janela Ideal de Preço para MacBook em Recife/PE",
+    "lesson_learned": "Em Recife/PE, o MacBook Air M1 (8GB/256GB) seminovo na faixa de R$ 3.800 a R$ 4.100 é a opção com o maior retorno por real investido no mercado secundário. Modelos novos lacrados (R$ 5.899 a R$ 7.499) cobram um ágio de ~45% a 70% pela garantia oficial de 1 ano, que só se justifica para faturamento corporativo ou quem exige NF inicial em seu nome.",
+    "market_rules": [
+      "Preço teto recomendado para M1 Air seminovo em Recife: R$ 4.300",
+      "Abaixo de R$ 3.600: checar com extremo rigor procedência, bloqueio iCloud e saúde da bateria",
+      "Ponto de corte para M2 Air seminovo: até R$ 6.000 com procedência de loja/NF"
+    ],
+    "tags": [
+      "recife",
+      "macbook",
+      "m1",
+      "m2",
+      "precificacao",
+      "custo_beneficio"
+    ]
+  },
+  {
+    "date": "2026-11-27",
+    "category": "Filtro Anti-Prejuízo e Risco Técnico",
+    "title": "Reprovação Automática de MacBooks Intel 2016-2019",
+    "lesson_learned": "Anúncios de MacBooks Intel 2016 a 2019 por R$ 2.400 - R$ 2.800 na OLX Recife são armadilhas de custo-benefício. Apresentam vulnerabilidade crônica a falhas mecânicas no Teclado Borboleta e ruptura do cabo Flexgate da tela, além de térmicas precárias e perda de suporte oficial a atualizações recentes do macOS.",
+    "market_rules": [
+      "Descartar ou classificar como Tier F MacBooks Intel 2016-2019 a menos que o valor seja irrisório (< R$ 1.200)",
+      "Alertar o usuário de que o conserto do Flexgate ou teclado custa mais que o próprio notebook"
+    ],
+    "tags": [
+      "intel",
+      "flexgate",
+      "teclado_borboleta",
+      "risco_cronico",
+      "reprovacao"
+    ]
+  },
+  {
+    "date": "2026-11-27",
+    "category": "Logística e Segurança de Negociação",
+    "title": "Protocolo de Segurança para Compra Presencial de Usados em Recife",
+    "lesson_learned": "Transações presenciais no Grande Recife devem ocorrer estritamente em praças de alimentação monitoradas de grandes centros de compras (Shopping Recife, Shopping Riomar, Plaza Shopping Casa Forte). É obrigatório solicitar o reset de fábrica do iCloud e do Buscar Mac na presença do comprador e realizar o diagnóstico de hardware (tecla 'D').",
+    "market_rules": [
+      "Locais de encontro autorizados: Shoppings monitorados (Shopping Recife / Riomar / Plaza)",
+      "Checklist obrigatório: Remoção de iCloud, teste de portas Thunderbolt, teste de carregamento, contagem de ciclos de bateria"
+    ],
+    "tags": [
+      "recife",
+      "seguranca",
+      "shopping_recife",
+      "riomar",
+      "protocolo_presencial"
+    ]
+  },
+  {
+    "date": "2026-11-27",
+    "category": "Integridade e Resolução de URLs de Anúncios",
+    "title": "Volatilidade de IDs de Produtos vs Listas Canônicas no Mercado Livre",
+    "lesson_learned": "URLs de páginas de produtos individuais com identificadores de lote (/p/MLB...) no Mercado Livre possuem ciclo de vida efêmero e exibem o erro \"Parece que esta página não existe\" quando o lote se esgota. Para garantir navegação resiliente e que nunca quebra para o usuário final, scouts devem priorizar rotas de catálogo canônico (https://lista.mercadolivre.com.br/...) ou validar ativamente a presença do selo 404 antes de persistir.",
+    "market_rules": [
+      "Sempre utilizar rotas canônicas estáveis como https://lista.mercadolivre.com.br/<termo> para fontes de varejo do Mercado Livre",
+      "Descartar ou substituir IDs estáticos de lote /p/MLB quando não houver garantia de renovação contínua do anúncio"
+    ],
+    "tags": [
+      "mercadolivre",
+      "urls",
+      "integridade",
+      "resiliencia",
+      "crawler",
+      "scout"
+    ]
+  },
+  {
+    "date": "2026-11-27",
+    "category": "Navegação e Usabilidade no Mercado Secundário (OLX)",
+    "title": "Diferença entre URL de Busca Geral e URL de Anúncio Individual na OLX",
+    "lesson_learned": "URLs da OLX com query parameters (?q=...) direcionam o usuário para a listagem da categoria (exibindo dezenas de outros anúncios e confusão visual). O botão \"Ir para o Anúncio Real\" deve apontar rigorosamente para o link direto do notebook individual (padrão https://pe.olx.com.br/grande-recife/informatica/notebooks/<titulo>-<id>), garantindo foco imediato no item inspecionado pelo agente.",
+    "market_rules": [
+      "Botões de ação direta no carrossel devem abrir a página individual do anúncio na OLX, nunca uma busca genérica",
+      "Formato canônico obrigatório em Pernambuco: pe.olx.com.br/grande-recife/informatica/notebooks/<slug>-<id>"
+    ],
+    "tags": [
+      "olx",
+      "grande_recife",
+      "ux",
+      "anuncio_real",
+      "scout_usados"
+    ]
+  },
+  {
+    "date": "2026-11-27",
+    "category": "Gestão de Ciclo de Vida de Dados e Limpeza no PostgreSQL",
+    "title": "Purga Obrigatória de Registros Órfãos em Sincronizações Iterativas",
+    "lesson_learned": "Em operações agênticas com persistência em PostgreSQL, operações de upsert individual (INSERT ON CONFLICT UPDATE) preservam dados de execuções de teste anteriores. Quando anúncios de protótipos ou fontes obsoletas são removidos do código-fonte dos scouts, é mandatário implementar uma etapa de purga de órfãos (DELETE WHERE id NOT IN active_ids) para evitar que links mortos ou mockups continuem sendo servidos na API e na interface web.",
+    "market_rules": [
+      "Garantir sincronização bidirecional entre scouts ativos e registros na tabela listings",
+      "Executar limpeza em cascata nas tabelas dependentes (classifications, hardware_audits, sentiment_audits)"
+    ],
+    "tags": [
+      "postgresql",
+      "database",
+      "etl",
+      "orfaos",
+      "dados_limpos"
+    ]
+  },
+  {
+    "date": "2026-11-27",
+    "category": "Expansão de Domínio e Benchmarking Multimarca",
+    "title": "Calibração Agêntica de Hardware x86 Moderno vs Apple Silicon",
+    "lesson_learned": "A incorporação do ecossistema Dell (linhas Inspiron, G15 Gamer e XPS) e do lançamento MacBook Neo (A18 Pro) demonstrou a importância de calibrar o classificador agêntico além do universo Apple Silicon tradicional: processadores Intel Core 13ª Ger e Core Ultra com NPU exigem critérios diferenciados (reconhecendo slots SO-DIMM expansíveis e potência de placas dedicadas RTX 3050/4050/4060), enquanto o MacBook Neo se consolida como alternativa de entrada moderna com operação fanless de 3nm.",
+    "market_rules": [
+      "Pontuar expansibilidade de RAM em notebooks PC/Dell como aspecto positivo para amortizar custo a longo prazo",
+      "Valorizar a presença de NPUs dedicadas para cargas locais de IA em ultrabooks modernos"
+    ],
+    "tags": [
+      "dell",
+      "apple_silicon",
+      "intel_core_ultra",
+      "rtx",
+      "benchmarking",
+      "classificacao"
+    ]
   }
 ]

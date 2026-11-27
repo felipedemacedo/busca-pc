@@ -87,14 +87,19 @@ uv run python -m busca_pc.main
 
 ## 🌐 Funcionalidades do Website & Dashboard
 
-1. **Catálogo Geral sem Teto de Compra**: Mapeia todas as possibilidades de computadores (de modelos de baixo custo a workstations pesadas).
-2. **Classificação Precisa em Tempo Real**:
-   - **Nota de Hardware (0 a 100)**: CPU, núcleos GPU, RAM unificada, barramento, SSD e eficiência térmica.
-   - **Nota de Sentimento Web (0 a 100)**: Análise de reputação no Reddit/YouTube e detecção de falhas crônicas (*Flexgate*, teclado borboleta).
-   - **Índice de Custo-Benefício (ICB 0 a 100)**: Relação entre qualidade técnica e preço justo de mercado em Recife.
-   - **Tiers Coloridos (S, A, B, C, F)** e vereditos detalhados.
-3. **Disparo de Nova Varredura Agêntica**: Botão interativo para acionar o Arquiteto e Scouts em tempo real.
-4. **Central de Memória & Aprendizados**: Aba dedicada com os aprendizados persistidos no PostgreSQL para futuras iterações.
+1. **Carrossel 3D Minimalista com Three.js**: Visualização moderna centralizada de cards de anúncios, com rolagem suave para esquerda/direita, arrasto por mouse e atalhos por teclado.
+2. **Links Diretos e Validados**: Cada card e modal inclui o botão **"Ir para o Anúncio Real"** com links canônicos testados que não expiram.
+3. **Filtros e Ordenação Dinâmica**:
+   - Sliders de preço mínimo e máximo.
+   - Ordenação instantânea por preço.
+   - Filtro por condição (Todos, Usados/Seminovos, Novos).
+   - Filtro por marca (**Todas**, **Apple**, **Dell**).
+4. **Classificação Agêntica em Tempo Real**:
+   - **Nota de Hardware (0 a 100)**: CPU, GPU (Apple Silicon / NVIDIA RTX), RAM, SSD e eficiência térmica.
+   - **Nota de Sentimento Web (0 a 100)**: Consenso de comunidade, análise de defeitos crônicos e durabilidade.
+   - **Índice de Custo-Benefício (ICB 0 a 100)** e Tiers categorizados (**S, A, B, C, F**).
+5. **Base de Aprendizados Contínuos**:
+   - Registro permanente em banco relacional PostgreSQL e em [knowledge_base/APRENDIZADOS_SISTEMA.md](knowledge_base/APRENDIZADOS_SISTEMA.md) com regras de mercado, lições aprendidas e melhores práticas de rastreamento.
 
 ---
 
