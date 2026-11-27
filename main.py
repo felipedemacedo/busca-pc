@@ -1,6 +1,5 @@
-def main():
-    print("Hello from busca-pc!")
-
+import asyncio
+from busca_pc.main import main
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

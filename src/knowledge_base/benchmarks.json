@@ -1,0 +1,24 @@
+{
+  "recife_pe": {
+    "macbook_air_m1_8gb_256gb_usado": {
+      "min_price": 3800.0,
+      "avg_price": 4200.0,
+      "max_price": 4500.0,
+      "notes": "Acima de R$ 4.400 compensa negociar ou ver M2. Abaixo de R$ 3.800 verificar procedência."
+    },
+    "macbook_air_m2_8gb_256gb_usado": {
+      "min_price": 5500.0,
+      "avg_price": 6200.0,
+      "max_price": 6800.0
+    },
+    "macbook_pro_intel_2017_2019_usado": {
+      "max_acceptable_price": 2400.0,
+      "flag": "HIGH_RISK_OBSOLETE",
+      "notes": "Risco de flexgate e teclado borboleta, sem updates macOS recentes."
+    },
+    "macbook_air_m1_8gb_256gb_novo": {
+      "retail_avg": 6200.0,
+      "notes": "Raramente compensa comparado ao seminovo em Recife."
+    }
+  }
+}
