@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: buscapc-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-buscapc}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-buscapc_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-buscapc}
+    ports:
+      - "127.0.0.1:5442:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-buscapc} -d ${POSTGRES_DB:-buscapc}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - buscapc-network
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: buscapc-web
+    restart: always
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-buscapc}:${POSTGRES_PASSWORD:-buscapc_secret}@db:5432/${POSTGRES_DB:-buscapc}
+      RUNNING_IN_DOCKER: "true"
+      PYTHONUNBUFFERED: "1"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./knowledge_base:/app/knowledge_base
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - buscapc-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  buscapc-network:
+    driver: bridge

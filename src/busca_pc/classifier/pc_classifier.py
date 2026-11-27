@@ -5,8 +5,10 @@ from busca_pc.models import ComputerListing, HardwareAudit, SentimentAudit, Fina
 class PCClassifierAgent:
     """
     Especialista em Classificação de PC.
-    Cruza o laudo técnico de hardware com o laudo de sentimento da internet e o preço de mercado,
-    calculando o Índice de Custo-Benefício (ICB), nota composta, faixa (Tier S a F) e veredito final.
+    Avalia TODO o espectro de máquinas (de modelos de baixo custo a workstations de ponta),
+    sem limites artificiais de orçamento. Calcula a nota composta de produto, o valor justo
+    de mercado específico da configuração, o Índice de Custo-Benefício (ICB), o Tier (S a F)
+    e o veredito final.
     """
 
     NAME = "PCClassifierAgent"
@@ -25,28 +27,25 @@ class PCClassifierAgent:
         # Hardware: 55% de peso; Sentimento/Confiabilidade de Comunidade: 45% de peso
         composite_quality = (hw_audit.hardware_score * 0.55) + (sent_audit.sentiment_score * 0.45)
 
-        # 2. Definição do Preço de Referência de Mercado em Recife
-        fair_price = self._determine_benchmark_price(listing, benchmarks)
+        # 2. Definição do Preço de Referência Específico de Mercado em Recife
+        fair_price = self._determine_benchmark_price(listing)
 
         # 3. Análise de Preço e Desconto Relativo
         price_delta_pct = ((fair_price - listing.price) / fair_price) * 100.0
 
         # 4. Cálculo do Índice de Custo-Benefício (ICB)
-        # Fator de valor = Razão entre valor justo de mercado e preço anunciado
         price_ratio = fair_price / max(listing.price, 1.0)
-        # Amortecimento exponencial suave para evitar distorções extremas
         price_multiplier = min(1.35, max(0.5, price_ratio ** 0.65))
 
         raw_cbi = composite_quality * price_multiplier
 
         # Penalidade drástica para produtos com alto risco crônico ou obsolescência (ex: Intel butterfly/flexgate)
         if "Alto Risco" in sent_audit.reliability_verdict or hw_audit.tier_category == "Obsoleto":
-            raw_cbi = min(raw_cbi * 0.4, 38.0)
+            raw_cbi = min(raw_cbi * 0.35, 30.0)
 
-        # Ajuste de condição: produtos novos têm prêmio de garantia de 1 ano, mas pagam ágio
+        # Ajuste de condição: produtos novos têm prêmio de garantia de 1 ano
         if listing.condition == "novo":
-            # Novo tem garantia total, reduzindo risco a zero no 1º ano
-            raw_cbi = min(raw_cbi * 1.05, 95.0)
+            raw_cbi = min(raw_cbi * 1.05, 96.0)
 
         cbi_score = round(max(0.0, min(100.0, raw_cbi)), 1)
 
@@ -74,19 +73,46 @@ class PCClassifierAgent:
             key_precautions=precautions,
         )
 
-    def _determine_benchmark_price(self, listing: ComputerListing, benchmarks: Dict[str, Any]) -> float:
+    def _determine_benchmark_price(self, listing: ComputerListing) -> float:
+        """Determina o preço de referência justo com base na configuração real da máquina."""
         proc = listing.processor.upper()
-        if "M1" in proc:
-            if listing.condition == "novo":
-                return 6000.0
-            return 4200.0
+        cond = listing.condition
+        ram = listing.ram_gb
+        storage = listing.storage_gb
+
+        # Workstations e Máquinas Pro
+        if "M4 PRO" in proc:
+            return 23500.0 if cond == "novo" else 18500.0
+        elif "M3 MAX" in proc:
+            return 26000.0 if cond == "novo" else 21000.0
+        elif "M3 PRO" in proc:
+            return 17500.0 if cond == "novo" else 13500.0
+        elif "M2 PRO" in proc:
+            return 15000.0 if cond == "novo" else 12500.0
+        elif "M1 PRO" in proc:
+            return 12000.0 if cond == "novo" else 8800.0
+
+        # Linha Air e modelos de consumo
+        elif "M3" in proc:
+            if ram >= 16:
+                return 11200.0 if cond == "novo" else 8500.0
+            return 9500.0 if cond == "novo" else 7200.0
         elif "M2" in proc:
-            if listing.condition == "novo":
-                return 7600.0
-            return 6200.0
+            if ram >= 16:
+                return 9200.0 if cond == "novo" else 7200.0
+            return 7600.0 if cond == "novo" else 6200.0
+        elif "M1" in proc:
+            if ram >= 16:
+                return 7200.0 if cond == "novo" else 5200.0
+            return 6000.0 if cond == "novo" else 4200.0
+
+        # Modelos Intel Antigos
         elif "INTEL" in proc:
-            return 2200.0
-        return 4000.0
+            if (listing.year or 2017) >= 2017:
+                return 2200.0
+            return 1400.0
+
+        return 4500.0
 
     def _determine_tier_and_verdict(
         self,
@@ -98,13 +124,13 @@ class PCClassifierAgent:
         if "Alto Risco" in sent_audit.reliability_verdict or hw_audit.tier_category == "Obsoleto":
             return "F", "Evitar Absolutamente"
 
-        if cbi >= 88.0:
+        if cbi >= 90.0:
             return "S", "Altamente Recomendado"
-        elif cbi >= 76.0:
+        elif cbi >= 78.0:
             return "A", "Bom Negócio"
-        elif cbi >= 62.0:
+        elif cbi >= 64.0:
             return "B", "Neutro"
-        elif cbi >= 45.0:
+        elif cbi >= 48.0:
             return "C", "Desaconselhado"
         else:
             return "F", "Evitar Absolutamente"
@@ -122,21 +148,21 @@ class PCClassifierAgent:
     ) -> str:
         if tier == "F":
             return (
-                f"REPROVADO PELO ESPECIALISTA: Embora o preço de R$ {listing.price:,.2f} aparente ser convidativo, "
+                f"REPROVADO PELO ESPECIALISTA: Embora o preço de R$ {listing.price:,.2f} pareça barato, "
                 f"o equipamento sofre com problemas crônicos graves ({', '.join(sent.chronic_flaws_identified)}) e "
                 f"arquitetura defasada. Qualquer reparo de teclado ou tela em Recife custará entre R$ 1.800 e R$ 3.000, "
-                f"inviabilizando totalmente o custo-benefício."
+                f"tornando a máquina financeiramente inviável."
             )
 
         preco_str = (
-            f"{abs(delta):.1f}% abaixo do valor de referência de Recife (R$ {fair_price:,.2f})"
+            f"{abs(delta):.1f}% abaixo do valor justo de mercado em Recife (R$ {fair_price:,.2f})"
             if delta >= 0 else
-            f"{abs(delta):.1f}% acima da média de usados locais"
+            f"{abs(delta):.1f}% acima da média praticada"
         )
 
         return (
             f"Classificação [{tier}] - Veredito: {verdict}. "
-            f"Equilíbrio notável com Nota de Hardware {hw.hardware_score}/100 e Sentimento {sent.sentiment_score}/100. "
+            f"Nota de Hardware {hw.hardware_score}/100 e Sentimento {sent.sentiment_score}/100. "
             f"Preço de R$ {listing.price:,.2f} está {preco_str}. "
             f"{hw.summary}"
         )
@@ -144,13 +170,13 @@ class PCClassifierAgent:
     def _generate_precautions(self, listing: ComputerListing, sent: SentimentAudit) -> List[str]:
         precautions = []
         if listing.condition in ["usado", "seminovo"]:
-            precautions.append("Marcar encontro exclusivamente em local seguro e público em Recife (ex: Shopping Recife ou Shopping Riomar).")
-            precautions.append("Exigir que o vendedor desvincule o iCloud e o 'Buscar Meu Mac' na sua frente antes do pagamento via Pix.")
-            precautions.append("Testar todas as portas USB-C/Thunderbolt conectando um pen-drive ou carregador.")
-            precautions.append("Executar o diagnóstico da Apple (ligar segurando a tecla 'D' ou botão Power) para testar memória e placa.")
+            precautions.append("Marcar encontro exclusivamente em local monitorado em Recife (ex: Shopping Recife, Shopping Riomar ou Plaza Casa Forte).")
+            precautions.append("Exigir a desvinculação completa do iCloud e do 'Buscar Meu Mac' na sua frente antes da transferência Pix.")
+            precautions.append("Testar todas as portas Thunderbolt/USB-C, teclado e trackpad.")
+            precautions.append("Executar o Diagnóstico Oficial Apple (ligar pressionando 'D' ou mantendo o botão Power pressionado).")
             if listing.battery_health_pct and listing.battery_health_pct < 85:
-                precautions.append(f"Atenção à bateria ({listing.battery_health_pct}%): provisionar ~R$ 600 para futura substituição.")
+                precautions.append(f"Atenção à bateria ({listing.battery_health_pct}% de saúde): orçar futura substituição.")
         else:
-            precautions.append("Conferir se a Nota Fiscal está no seu nome/CPF e com o número de série correspondente.")
-            precautions.append("Ativar a cobertura oficial de garantia de 1 ano no site checkcoverage.apple.com assim que abrir.")
+            precautions.append("Conferir se a Nota Fiscal está emitida em seu CPF com número de série correspondente.")
+            precautions.append("Ativar a cobertura de garantia oficial Apple de 1 ano no portal checkcoverage.apple.com.")
         return precautions

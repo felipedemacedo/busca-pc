@@ -64,20 +64,49 @@ flowchart TD
 
 ## 🚀 Instalação e Execução
 
-### Pré-requisitos
-- Python 3.12+ (ou [uv](https://docs.astral.sh/uv/))
+### Opção 1: Rodando Tudo em Containers Docker (Recomendado)
+O ecossistema completo (banco de dados PostgreSQL 16 + aplicação Web com FastAPI e orquestrador agêntico) sobe com um único comando:
 
-### Instalação
+```bash
+docker compose up --build -d
+```
+
+- **Website / Dashboard Interativo:** [http://localhost:8000](http://localhost:8000)
+- **Documentação Interativa Swagger API:** [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Banco PostgreSQL:** Porta mapeada `127.0.0.1:5442` (internamente na rede docker `db:5432`).
+
+### Opção 2: Execução Local via CLI com UV
 ```bash
 git clone https://github.com/felipedemacedo/busca-pc.git
 cd busca-pc
 uv sync
-```
-
-### Executar a Missão 1: MacBook com bom custo-benefício em Recife/PE
-```bash
 uv run python -m busca_pc.main
 ```
+
+---
+
+## 🌐 Funcionalidades do Website & Dashboard
+
+1. **Catálogo Geral sem Teto de Compra**: Mapeia todas as possibilidades de computadores (de modelos de baixo custo a workstations pesadas).
+2. **Classificação Precisa em Tempo Real**:
+   - **Nota de Hardware (0 a 100)**: CPU, núcleos GPU, RAM unificada, barramento, SSD e eficiência térmica.
+   - **Nota de Sentimento Web (0 a 100)**: Análise de reputação no Reddit/YouTube e detecção de falhas crônicas (*Flexgate*, teclado borboleta).
+   - **Índice de Custo-Benefício (ICB 0 a 100)**: Relação entre qualidade técnica e preço justo de mercado em Recife.
+   - **Tiers Coloridos (S, A, B, C, F)** e vereditos detalhados.
+3. **Disparo de Nova Varredura Agêntica**: Botão interativo para acionar o Arquiteto e Scouts em tempo real.
+4. **Central de Memória & Aprendizados**: Aba dedicada com os aprendizados persistidos no PostgreSQL para futuras iterações.
+
+---
+
+## 🗄️ Estrutura da Base de Dados PostgreSQL
+
+O banco de dados relacional armazena de forma estruturada:
+- `listings`: Dados cadastrais de cada máquina encontrada (novas, seminovas e usadas).
+- `hardware_audits`: Laudos técnicos emitidos pelo Analista de Hardware.
+- `sentiment_audits`: Laudos de comunidade e histórico de defeitos crônicos pelo Analista de Sentimento.
+- `classifications`: Índices de custo-benefício, Tiers, justificativas e checklists de compra em Recife.
+- `learnings`: Regras de mercado e aprendizados persistentes gerados pelos agentes.
+- `mission_runs`: Histórico de execuções das missões e tempo decorrido.
 
 ---
 

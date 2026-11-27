@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Busca-PC | Analista Agêntico Multiagente & Classificador de Computadores</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+            },
+            darkbg: '#0f172a',
+            darkcard: '#1e293b',
+            darkborder: '#334155'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    [x-cloak] { display: none !important; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  </style>
+</head>
+<body class="bg-darkbg text-slate-100 min-h-screen font-sans antialiased" x-data="buscaApp()" x-init="initApp()" x-cloak>
+
+  <!-- Navbar -->
+  <header class="border-b border-darkborder bg-darkcard/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+          <i class="fa-solid fa-microchip text-white text-lg"></i>
+        </div>
+        <div>
+          <span class="font-bold text-xl tracking-tight bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Busca-PC</span>
+          <span class="text-xs text-slate-400 block -mt-1">Ecossistema Agêntico • PostgreSQL • Docker</span>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <button @click="activeTab = 'catalog'" :class="activeTab === 'catalog' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-800'" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2">
+          <i class="fa-solid fa-laptop"></i>
+          <span>Catálogo de Máquinas</span>
+        </button>
+        <button @click="activeTab = 'learnings'" :class="activeTab === 'learnings' ? 'bg-emerald-600 text-white' : 'text-slate-300 hover:bg-slate-800'" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition flex items-center space-x-2">
+          <i class="fa-solid fa-brain"></i>
+          <span>Memória Agêntica (<span x-text="learnings.length"></span>)</span>
+        </button>
+        <button @click="triggerMission()" :disabled="scanning" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 text-white px-4 py-1.5 rounded-lg text-sm font-semibold shadow-md transition flex items-center space-x-2">
+          <i class="fa-solid" :class="scanning ? 'fa-spinner fa-spin' : 'fa-bolt'"></i>
+          <span x-text="scanning ? 'Varredura em Execução...' : 'Disparar Varredura'"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Banner Informativo da Operação -->
+  <div class="bg-slate-900/60 border-b border-darkborder py-2.5 px-4 text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center space-x-4">
+        <span><strong class="text-emerald-400"><i class="fa-solid fa-user-astronaut mr-1"></i> Arquiteto:</strong> Orquestração Concorrente Ativa</span>
+        <span><strong class="text-cyan-400"><i class="fa-solid fa-magnifying-glass mr-1"></i> Scouts:</strong> Usados & Novos em Paralelo</span>
+        <span><strong class="text-purple-400"><i class="fa-solid fa-scale-balanced mr-1"></i> Analistas:</strong> Hardware & Sentimento de Comunidade</span>
+        <span><strong class="text-amber-400"><i class="fa-solid fa-database mr-1"></i> Persistência:</strong> PostgreSQL Relacional</span>
+      </div>
+      <div class="text-slate-400 flex items-center space-x-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span>Sem teto de compra • Todas as possibilidades mapeadas</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Indicador de Varredura em Andamento -->
+    <div x-show="scanning" class="mb-6 p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/40 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+          <i class="fa-solid fa-circle-notch fa-spin"></i>
+        </div>
+        <div>
+          <h4 class="font-semibold text-emerald-300 text-sm">Operação Agêntica em Andamento</h4>
+          <p class="text-xs text-slate-400">UsedScout e NewScout coletando anúncios em paralelo; HardwareAnalyst e SentimentAnalyst auditando simultaneamente...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-darkcard border border-darkborder rounded-xl p-4 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Auditado</span>
+          <i class="fa-solid fa-laptop-code text-cyan-400"></i>
+        </div>
+        <div class="mt-2 flex items-baseline space-x-2">
+          <span class="text-2xl font-bold text-white" x-text="stats.total_analyzed || items.length"></span>
+          <span class="text-xs text-slate-400">máquinas classificadas</span>
+        </div>
+      </div>
+
+      <div class="bg-darkcard border border-darkborder rounded-xl p-4 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Tier S (Ouro)</span>
+          <i class="fa-solid fa-trophy text-amber-400"></i>
+        </div>
+        <div class="mt-2 flex items-baseline space-x-2">
+          <span class="text-2xl font-bold text-emerald-400" x-text="stats.tiers?.S || 0"></span>
+          <span class="text-xs text-slate-400">campeões custo-benefício</span>
+        </div>
+      </div>
+
+      <div class="bg-darkcard border border-darkborder rounded-xl p-4 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-rose-400 uppercase tracking-wider">Tier F (Reprovados)</span>
+          <i class="fa-solid fa-triangle-exclamation text-rose-400"></i>
+        </div>
+        <div class="mt-2 flex items-baseline space-x-2">
+          <span class="text-2xl font-bold text-rose-400" x-text="stats.tiers?.F || 0"></span>
+          <span class="text-xs text-slate-400">armadilhas/defeitos crônicos</span>
+        </div>
+      </div>
+
+      <div class="bg-darkcard border border-darkborder rounded-xl p-4 shadow-sm">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Preço Médio</span>
+          <i class="fa-solid fa-brazilian-real-sign text-emerald-400"></i>
+        </div>
+        <div class="mt-2 flex items-baseline space-x-2">
+          <span class="text-2xl font-bold text-white" x-text="formatCurrency(stats.avg_price || 0)"></span>
+          <span class="text-xs text-slate-400">amostra completa</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 1: CATÁLOGO DE MÁQUINAS -->
+    <div x-show="activeTab === 'catalog'">
+      <!-- Barra de Filtros -->
+      <div class="bg-darkcard border border-darkborder rounded-xl p-4 mb-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <!-- Busca Textual -->
+          <div class="md:col-span-2 relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-sm"></i>
+            <input type="text" x-model="filters.search" @input.debounce.300ms="fetchListings()" placeholder="Buscar por modelo, chip, bairro de Recife (ex: M1, M2, Derby, 16GB)..." class="w-full bg-slate-900 border border-darkborder rounded-lg pl-9 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+          </div>
+
+          <!-- Filtro de Condição -->
+          <div>
+            <select x-model="filters.condition" @change="fetchListings()" class="w-full bg-slate-900 border border-darkborder rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+              <option value="todos">Todas as Condições</option>
+              <option value="seminovo">Seminovos</option>
+              <option value="usado">Usados</option>
+              <option value="novo">Novos Lacrados</option>
+            </select>
+          </div>
+
+          <!-- Filtro de Arquitetura -->
+          <div>
+            <select x-model="filters.architecture" @change="fetchListings()" class="w-full bg-slate-900 border border-darkborder rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
+              <option value="todos">Todos os Processadores</option>
+              <option value="Apple Silicon">Apenas Apple Silicon (M1/M2/M3/M4)</option>
+              <option value="Intel x86">Apenas Intel x86</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Filtro Rápido por Tier -->
+        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-darkborder/50 text-xs">
+          <span class="text-slate-400 font-semibold mr-1">Filtrar por Tier:</span>
+          <button @click="setTier('todos')" :class="filters.tier === 'todos' ? 'bg-slate-700 text-white' : 'bg-slate-800/80 text-slate-400 hover:bg-slate-800'" class="px-2.5 py-1 rounded-md font-medium transition">Todos</button>
+          <button @click="setTier('S')" :class="filters.tier === 'S' ? 'bg-emerald-600 text-white' : 'bg-slate-800/80 text-emerald-400 hover:bg-slate-800'" class="px-2.5 py-1 rounded-md font-medium transition">⭐ Tier S (Campeões)</button>
+          <button @click="setTier('A')" :class="filters.tier === 'A' ? 'bg-blue-600 text-white' : 'bg-slate-800/80 text-blue-400 hover:bg-slate-800'" class="px-2.5 py-1 rounded-md font-medium transition">Tier A (Bons Negócios)</button>
+          <button @click="setTier('B')" :class="filters.tier === 'B' ? 'bg-cyan-600 text-white' : 'bg-slate-800/80 text-cyan-400 hover:bg-slate-800'" class="px-2.5 py-1 rounded-md font-medium transition">Tier B (Neutros)</button>
+          <button @click="setTier('F')" :class="filters.tier === 'F' ? 'bg-rose-600 text-white' : 'bg-slate-800/80 text-rose-400 hover:bg-slate-800'" class="px-2.5 py-1 rounded-md font-medium transition">🚫 Tier F (Evitar Absolutamente)</button>
+        </div>
+      </div>
+
+      <!-- Grid de Resultados -->
+      <div x-show="!loading && items.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <template x-for="item in items" :key="item.id">
+          <div class="bg-darkcard border border-darkborder rounded-xl p-5 shadow-lg flex flex-col justify-between hover:border-slate-500 transition-all duration-200">
+            <div>
+              <!-- Header do Card: Tier Badge + Condição -->
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider shadow"
+                  :class="{
+                    'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40': item.classification?.tier === 'S',
+                    'bg-blue-500/20 text-blue-400 border border-blue-500/40': item.classification?.tier === 'A',
+                    'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40': item.classification?.tier === 'B',
+                    'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40': item.classification?.tier === 'C',
+                    'bg-rose-500/20 text-rose-400 border border-rose-500/40': item.classification?.tier === 'F'
+                  }">
+                  Tier <span x-text="item.classification?.tier"></span> • <span x-text="item.classification?.verdict"></span>
+                </span>
+                <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 uppercase font-semibold" x-text="item.condition"></span>
+              </div>
+
+              <!-- Título -->
+              <h3 class="text-base font-bold text-white leading-snug mb-2 line-clamp-2" x-text="item.title"></h3>
+
+              <!-- Preço & Preço Justo -->
+              <div class="mb-4 bg-slate-900/60 p-3 rounded-lg border border-darkborder/60">
+                <div class="flex items-baseline justify-between">
+                  <div>
+                    <span class="text-xs text-slate-400 block">Preço Anunciado</span>
+                    <span class="text-xl font-extrabold text-emerald-400" x-text="formatCurrency(item.price)"></span>
+                  </div>
+                  <div class="text-right">
+                    <span class="text-xs text-slate-400 block">Preço de Mercado</span>
+                    <span class="text-xs text-slate-300 font-semibold" x-text="formatCurrency(item.classification?.fair_market_price)"></span>
+                    <span class="text-[10px] block" :class="item.classification?.price_delta_pct >= 0 ? 'text-emerald-400 font-bold' : 'text-rose-400'">
+                      <span x-text="item.classification?.price_delta_pct >= 0 ? '▼ ' + Math.abs(item.classification?.price_delta_pct).toFixed(1) + '% economia' : '▲ ' + Math.abs(item.classification?.price_delta_pct).toFixed(1) + '% acima'"></span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Especificações Resumidas -->
+              <div class="grid grid-cols-2 gap-2 text-xs text-slate-300 mb-4">
+                <div class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-microchip text-slate-500"></i>
+                  <span class="truncate" x-text="item.processor"></span>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-memory text-slate-500"></i>
+                  <span><strong x-text="item.ram_gb"></strong>GB • <strong x-text="item.storage_gb"></strong>GB</span>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-battery-half text-slate-500"></i>
+                  <span x-text="item.battery_health_pct ? item.battery_health_pct + '% saúde (' + (item.battery_cycles || 0) + ' ciclos)' : 'Bateria 100% (Novo)'"></span>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-location-dot text-slate-500"></i>
+                  <span class="truncate" x-text="item.location"></span>
+                </div>
+              </div>
+
+              <!-- Metricas dos Analistas Agênticos -->
+              <div class="space-y-2 mb-4 pt-3 border-t border-darkborder/50 text-xs">
+                <!-- Nota de Hardware -->
+                <div>
+                  <div class="flex justify-between text-[11px] mb-1">
+                    <span class="text-slate-400"><i class="fa-solid fa-gears text-cyan-400 mr-1"></i> Auditoria Hardware</span>
+                    <span class="font-bold text-cyan-400" x-text="item.hardware_audit?.score + '/100'"></span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-cyan-500 h-1.5 rounded-full" :style="'width: ' + (item.hardware_audit?.score || 0) + '%'"></div>
+                  </div>
+                </div>
+
+                <!-- Nota de Sentimento -->
+                <div>
+                  <div class="flex justify-between text-[11px] mb-1">
+                    <span class="text-slate-400"><i class="fa-solid fa-comments text-purple-400 mr-1"></i> Sentimento Web / Fóruns</span>
+                    <span class="font-bold text-purple-400" x-text="item.sentiment_audit?.score + '/100'"></span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-purple-500 h-1.5 rounded-full" :style="'width: ' + (item.sentiment_audit?.score || 0) + '%'"></div>
+                  </div>
+                </div>
+
+                <!-- Índice de Custo-Benefício -->
+                <div>
+                  <div class="flex justify-between text-[11px] mb-1">
+                    <span class="text-slate-400"><i class="fa-solid fa-chart-line text-amber-400 mr-1"></i> Custo-Benefício (ICB)</span>
+                    <span class="font-bold text-amber-400" x-text="item.classification?.cost_benefit_index + '/100'"></span>
+                  </div>
+                  <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div class="bg-amber-500 h-1.5 rounded-full" :style="'width: ' + (item.classification?.cost_benefit_index || 0) + '%'"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botão de Ação -->
+            <button @click="openModal(item)" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 py-2 rounded-lg text-xs font-semibold transition flex items-center justify-center space-x-2">
+              <i class="fa-solid fa-file-waveform text-emerald-400"></i>
+              <span>Ver Laudo Técnico & Análise Completa</span>
+            </button>
+          </div>
+        </template>
+      </div>
+
+      <!-- Empty State -->
+      <div x-show="!loading && items.length === 0" class="text-center py-16 bg-darkcard border border-darkborder rounded-2xl">
+        <i class="fa-solid fa-filter-circle-xmark text-slate-600 text-4xl mb-3"></i>
+        <h3 class="text-lg font-bold text-slate-300">Nenhum computador encontrado com os filtros atuais</h3>
+        <p class="text-sm text-slate-500 mt-1">Experimente limpar a busca ou selecionar outro Tier.</p>
+        <button @click="clearFilters()" class="mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-semibold">Limpar Filtros</button>
+      </div>
+    </div>
+
+    <!-- TAB 2: MEMÓRIA AGÊNTICA & APRENDIZADOS -->
+    <div x-show="activeTab === 'learnings'" class="space-y-6">
+      <div class="bg-darkcard border border-darkborder rounded-xl p-5">
+        <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+          <i class="fa-solid fa-database text-emerald-400"></i>
+          <span>Memória Persistente de Aprendizados (Gravada no PostgreSQL)</span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-1">Regras de mercado, janelas de preço apuradas no Grande Recife e filtros anti-prejuízo gerados pelos agentes para alimentar decisões futuras.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <template x-for="lr in learnings" :key="lr.id || lr.title">
+          <div class="bg-darkcard border border-darkborder rounded-xl p-5 shadow flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 uppercase" x-text="lr.category"></span>
+                <span class="text-xs text-slate-500" x-text="lr.date"></span>
+              </div>
+              <h3 class="text-base font-bold text-white mb-2" x-text="lr.title"></h3>
+              <p class="text-xs text-slate-300 leading-relaxed mb-4" x-text="lr.lesson_learned"></p>
+
+              <div class="space-y-1.5 pt-3 border-t border-darkborder/60">
+                <span class="text-[11px] font-semibold text-slate-400 block">Regras Operacionais:</span>
+                <template x-for="rule in lr.market_rules" :key="rule">
+                  <div class="flex items-start space-x-2 text-xs text-slate-300">
+                    <i class="fa-solid fa-circle-check text-emerald-400 mt-0.5 text-[10px]"></i>
+                    <span x-text="rule"></span>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-darkborder/40">
+              <template x-for="tag in lr.tags" :key="tag">
+                <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400" x-text="'#' + tag"></span>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL DE LAUDO COMPLETO -->
+  <div x-show="modalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" @click.self="modalOpen = false">
+    <div class="bg-darkcard border border-darkborder rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-6" x-show="selectedItem">
+      <!-- Modal Header -->
+      <div class="flex items-start justify-between border-b border-darkborder pb-4 mb-4">
+        <div>
+          <div class="flex items-center space-x-2 mb-1">
+            <span class="px-2 py-0.5 rounded text-xs font-black uppercase"
+              :class="{
+                'bg-emerald-500/20 text-emerald-400': selectedItem?.classification?.tier === 'S',
+                'bg-blue-500/20 text-blue-400': selectedItem?.classification?.tier === 'A',
+                'bg-cyan-500/20 text-cyan-400': selectedItem?.classification?.tier === 'B',
+                'bg-yellow-500/20 text-yellow-400': selectedItem?.classification?.tier === 'C',
+                'bg-rose-500/20 text-rose-400': selectedItem?.classification?.tier === 'F'
+              }">
+              Tier <span x-text="selectedItem?.classification?.tier"></span> • <span x-text="selectedItem?.classification?.verdict"></span>
+            </span>
+            <span class="text-xs px-2 py-0.5 rounded bg-slate-800 text-slate-400 uppercase font-semibold" x-text="selectedItem?.condition"></span>
+          </div>
+          <h2 class="text-lg font-bold text-white" x-text="selectedItem?.title"></h2>
+          <span class="text-xs text-slate-400 flex items-center space-x-1 mt-1">
+            <i class="fa-solid fa-location-dot"></i>
+            <span x-text="selectedItem?.location"></span> • Fonte: <span class="font-semibold text-slate-300" x-text="selectedItem?.source"></span>
+          </span>
+        </div>
+        <button @click="modalOpen = false" class="text-slate-400 hover:text-white p-2 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Preço & Economia -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-xl bg-slate-900 border border-darkborder mb-6">
+        <div>
+          <span class="text-xs text-slate-400 block">Preço Anunciado</span>
+          <span class="text-2xl font-black text-emerald-400" x-text="formatCurrency(selectedItem?.price)"></span>
+        </div>
+        <div>
+          <span class="text-xs text-slate-400 block">Valor Justo de Referência</span>
+          <span class="text-lg font-bold text-slate-200" x-text="formatCurrency(selectedItem?.classification?.fair_market_price)"></span>
+        </div>
+        <div>
+          <span class="text-xs text-slate-400 block">Índice Custo-Benefício</span>
+          <span class="text-2xl font-black text-amber-400" x-text="selectedItem?.classification?.cost_benefit_index + '/100'"></span>
+        </div>
+      </div>
+
+      <!-- Laudo de Hardware -->
+      <div class="mb-6 p-4 rounded-xl bg-slate-900/60 border border-darkborder">
+        <h4 class="text-sm font-bold text-cyan-400 flex items-center space-x-2 mb-2">
+          <i class="fa-solid fa-gears"></i>
+          <span>Laudo Técnico do Analista de Hardware (Nota: <span x-text="selectedItem?.hardware_audit?.score + '/100'"></span>)</span>
+        </h4>
+        <p class="text-xs text-slate-300 mb-3" x-text="selectedItem?.hardware_audit?.summary"></p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-2.5 rounded bg-slate-800/80 border border-slate-700/50">
+            <span class="font-semibold text-emerald-400 block mb-1">Pontos Fortes:</span>
+            <ul class="list-disc list-inside space-y-1 text-slate-300">
+              <template x-for="pro in selectedItem?.hardware_audit?.pros || []" :key="pro">
+                <li x-text="pro"></li>
+              </template>
+            </ul>
+          </div>
+          <div class="p-2.5 rounded bg-slate-800/80 border border-slate-700/50">
+            <span class="font-semibold text-rose-400 block mb-1">Atenções Técnicas:</span>
+            <ul class="list-disc list-inside space-y-1 text-slate-300">
+              <template x-for="con in selectedItem?.hardware_audit?.cons || []" :key="con">
+                <li x-text="con"></li>
+              </template>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Laudo de Sentimento & Fóruns -->
+      <div class="mb-6 p-4 rounded-xl bg-slate-900/60 border border-darkborder">
+        <h4 class="text-sm font-bold text-purple-400 flex items-center space-x-2 mb-2">
+          <i class="fa-solid fa-comments"></i>
+          <span>Laudo do Analista de Sentimento & Fóruns (Nota: <span x-text="selectedItem?.sentiment_audit?.score + '/100'"></span>)</span>
+        </h4>
+        <p class="text-xs text-slate-300 mb-3" x-text="selectedItem?.sentiment_audit?.consensus"></p>
+        <template x-if="selectedItem?.sentiment_audit?.chronic_flaws?.length > 0">
+          <div class="p-2.5 rounded bg-rose-950/40 border border-rose-800/50 text-xs text-rose-300 mb-2">
+            <strong class="block mb-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Defeitos Crônicos Identificados:</strong>
+            <ul class="list-disc list-inside space-y-0.5">
+              <template x-for="flaw in selectedItem?.sentiment_audit?.chronic_flaws" :key="flaw">
+                <li x-text="flaw"></li>
+              </template>
+            </ul>
+          </div>
+        </template>
+      </div>
+
+      <!-- Veredito do Especialista & Precauções em Recife -->
+      <div class="p-4 rounded-xl bg-emerald-950/30 border border-emerald-600/40 mb-6">
+        <h4 class="text-sm font-bold text-emerald-400 flex items-center space-x-2 mb-2">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Veredito do Especialista & Protocolo de Compra em Recife</span>
+        </h4>
+        <p class="text-xs text-slate-300 mb-3" x-text="selectedItem?.classification?.justification"></p>
+        <div class="space-y-1.5 text-xs text-slate-300">
+          <strong class="text-emerald-300 block mb-1">Checklist Obrigatório de Negociação:</strong>
+          <template x-for="p in selectedItem?.classification?.precautions || []" :key="p">
+            <div class="flex items-start space-x-2">
+              <i class="fa-solid fa-check text-emerald-400 mt-0.5"></i>
+              <span x-text="p"></span>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex justify-end space-x-3 pt-3 border-t border-darkborder">
+        <button @click="modalOpen = false" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold">Fechar</button>
+        <template x-if="selectedItem?.url">
+          <a :href="selectedItem?.url" target="_blank" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 shadow">
+            <span>Acessar Anúncio Original</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+          </a>
+        </template>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function buscaApp() {
+      return {
+        activeTab: 'catalog',
+        items: [],
+        learnings: [],
+        stats: {},
+        loading: false,
+        scanning: false,
+        modalOpen: false,
+        selectedItem: null,
+        filters: {
+          tier: 'todos',
+          condition: 'todos',
+          architecture: 'todos',
+          search: ''
+        },
+
+        async initApp() {
+          await this.fetchListings();
+          await this.fetchStats();
+          await this.fetchLearnings();
+        },
+
+        async fetchListings() {
+          this.loading = true;
+          try {
+            const params = new URLSearchParams();
+            if (this.filters.tier && this.filters.tier !== 'todos') params.append('tier', this.filters.tier);
+            if (this.filters.condition && this.filters.condition !== 'todos') params.append('condition', this.filters.condition);
+            if (this.filters.architecture && this.filters.architecture !== 'todos') params.append('architecture', this.filters.architecture);
+            if (this.filters.search) params.append('search', this.filters.search);
+
+            const res = await fetch(`/api/listings?${params.toString()}`);
+            const data = await res.json();
+            this.items = data.data || [];
+          } catch (e) {
+            console.error('Erro ao buscar listagens:', e);
+          } finally {
+            this.loading = false;
+          }
+        },
+
+        async fetchStats() {
+          try {
+            const res = await fetch('/api/stats');
+            this.stats = await res.json();
+          } catch (e) {
+            console.error('Erro ao buscar estatísticas:', e);
+          }
+        },
+
+        async fetchLearnings() {
+          try {
+            const res = await fetch('/api/learnings');
+            const data = await res.json();
+            this.learnings = data.data || [];
+          } catch (e) {
+            console.error('Erro ao buscar aprendizados:', e);
+          }
+        },
+
+        async triggerMission() {
+          this.scanning = true;
+          try {
+            const res = await fetch('/api/missions/run', { method: 'POST' });
+            const data = await res.json();
+            await this.fetchListings();
+            await this.fetchStats();
+            await this.fetchLearnings();
+          } catch (e) {
+            console.error('Erro ao executar missão:', e);
+          } finally {
+            this.scanning = false;
+          }
+        },
+
+        setTier(t) {
+          this.filters.tier = t;
+          this.fetchListings();
+        },
+
+        clearFilters() {
+          this.filters = {
+            tier: 'todos',
+            condition: 'todos',
+            architecture: 'todos',
+            search: ''
+          };
+          this.fetchListings();
+        },
+
+        openModal(item) {
+          this.selectedItem = item;
+          this.modalOpen = true;
+        },
+
+        formatCurrency(v) {
+          if (!v) return 'R$ 0,00';
+          return Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+      }
+    }
+  </script>
+</body>
+</html>
