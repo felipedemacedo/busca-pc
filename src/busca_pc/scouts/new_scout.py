@@ -238,6 +238,30 @@ class NewScoutAgent:
                 raw_description="Novo MacBook Air 13.6'' geração 2026 equipado com chip Apple M5 (10-core CPU, 10-core GPU com Ray Tracing e Neural Engine avançada), 16GB de memória unificada e 512GB SSD. Tela Liquid Retina de 500 nits, Wi-Fi 7 e bateria de até 18 horas.",
             ),
 
+            # 8.2 Apple MacBook Air M5 13.6'' 16GB 512GB Azul-Céu (Oferta Black Friday Horizon Play)
+            ComputerListing(
+                id="horizon-m5-sky-01",
+                title="Apple MacBook Air 13.6'' M5 16GB RAM 512GB SSD 2026 Azul-Céu - Horizon Play",
+                brand="Apple",
+                condition="novo",
+                price=8513.70,
+                location="Horizon Play (Frete Grátis para Recife/PE - CEP 51021-300)",
+                seller_type="loja_oficial",
+                source="Horizon Play (Oferta Black Friday)",
+                url="https://www.horizonplay.com.br/produto/apple-notebook-macbook-air-m5-13-6-16gb-512gb-ssd-2026-azul-ceu-233969",
+                processor="Apple M5 (10-core CPU, 10-core GPU, Neural Accelerators)",
+                architecture="Apple Silicon",
+                ram_gb=16,
+                storage_gb=512,
+                storage_type="SSD NVMe",
+                screen_size_inches=13.6,
+                year=2026,
+                battery_health_pct=100,
+                battery_cycles=0,
+                accessories=["Novo na caixa lacrada", "Garantia mundial Apple 1 ano", "Carregador MagSafe 3 35W", "Cabo MagSafe trançado"],
+                raw_description="Apple Notebook MacBook Air M5 13.6'' 16GB 512GB SSD 2026 Azul-Céu. Oferta Black Friday: de R$ 12.841,00 por R$ 8.513,70 no Pix (12% OFF) ou 12x de R$ 806,22 sem juros. Frete grátis para Boa Viagem, Recife/PE.",
+            ),
+
             # 9. MacBook Pro 14'' M3 Pro 18GB 512GB
             ComputerListing(
                 id="new-ret-m3pro-04",
