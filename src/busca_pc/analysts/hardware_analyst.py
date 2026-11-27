@@ -45,6 +45,11 @@ class HardwareAnalystAgent:
             pros.append("NVIDIA GeForce RTX 3050 6GB dedicada: boa entrada gráfica com suporte a ray tracing")
 
         # Apple Silicon Chips
+        elif "A18 PRO" in proc or "A18" in proc or "NEO" in title:
+            score += 32.0
+            lifespan = 5
+            proc_eval = f"Chip Apple A18 Pro de 3nm ({listing.processor}) de altíssima eficiência energética, motor neural avançado para Apple Intelligence e operação fanless ultrassilenciosa."
+            pros.append("Chip Apple A18 Pro (3nm): ultraeficiente, operação fria sem ruído e suporte a IA")
         elif "M4 PRO" in proc or "M4 MAX" in proc:
             score += 42.0
             lifespan = 7

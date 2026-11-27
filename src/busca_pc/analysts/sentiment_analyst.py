@@ -62,6 +62,20 @@ class SentimentAnalystAgent:
             ])
 
         # 3. MacBook Air M2 / M3
+        elif "APPLE" in brand_upper and "NEO" in title_upper:
+            sentiment_score = 93.0
+            verdict = "Altíssima Confiabilidade"
+            consensus = (
+                "Novo conceito de MacBook ultraleve e acessível elogiado em comunidades de tecnologia. "
+                "Alimentado pelo silício Apple A18 Pro com litografia de 3nm, oferece autonomia recorde para estudo e trabalho, "
+                "acabamento anodizado colorido e operação silenciosa fanless."
+            )
+            pros.extend([
+                "Arquitetura 3nm moderna ultra-eficiente com excelente autonomia de bateria",
+                "Construção fanless (zero ruído e zero aquecimento em tarefas cotidianas)",
+                "Design moderno, leve e compacto com opções coloridas (Índigo, Citrus, Prata)"
+            ])
+
         elif "APPLE" in brand_upper and ("M2" in proc_upper or "M3" in proc_upper) and "AIR" in title_upper:
             sentiment_score = 91.0
             verdict = "Altíssima Confiabilidade"

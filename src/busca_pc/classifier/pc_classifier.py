@@ -94,7 +94,11 @@ class PCClassifierAgent:
             return 4000.0
 
         # === LINHA APPLE MACBOOK ===
-        if "M4 PRO" in proc:
+        if "NEO" in title or "A18" in proc:
+            if listing.storage_gb >= 512:
+                return 7400.0 if cond == "novo" else 5500.0
+            return 6400.0 if cond == "novo" else 4800.0
+        elif "M4 PRO" in proc:
             return 23500.0 if cond == "novo" else 18500.0
         elif "M3 MAX" in proc:
             return 26000.0 if cond == "novo" else 21000.0
