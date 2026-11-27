@@ -32,6 +32,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - ./src:/app/src
       - ./knowledge_base:/app/knowledge_base
     depends_on:
       db:
