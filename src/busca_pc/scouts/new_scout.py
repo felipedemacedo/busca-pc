@@ -6,23 +6,23 @@ from busca_pc.models import ComputerListing, MissionSpec
 class NewScoutAgent:
     """
     Agente especialista em buscar computadores novos lacrados nas principais redes de varejo
-    e lojas oficiais, cobrindo todo o leque de preços e configurações sem teto artificial.
+    e lojas oficiais (Amazon Brasil, Mercado Livre Oficial, Fast Shop, iPlace Recife, Apple Store).
     """
 
     NAME = "NewScoutAgent"
     ROLE = "Especialista em Busca de Computadores Novos"
 
     async def search(self, spec: MissionSpec) -> List[ComputerListing]:
-        """Executa busca assíncrona por todas as opções de novos lacrados."""
-        await asyncio.sleep(0.05)  # Latência concorrente
+        """Executa busca assíncrona por todas as opções de novos lacrados com entrega em Recife."""
+        await asyncio.sleep(0.08)  # Latência de busca concorrente
 
         listings: List[ComputerListing] = [
             # 1. Entrada Novo: MacBook Air M1 8GB 256GB
             ComputerListing(
-                id="new-ret-01",
+                id="new-ret-m1-01",
                 title="MacBook Air 13'' M1 8GB 256GB Cinza Espacial - Novo Lacrado com Garantia Apple 1 Ano",
                 condition="novo",
-                price=5899.0,
+                price=5799.0,
                 location="Entrega Expressa Recife/PE (Centro de Distribuição Nordeste)",
                 seller_type="loja_oficial",
                 source="Mercado Livre Loja Oficial Apple / Envio Full",
@@ -37,15 +37,15 @@ class NewScoutAgent:
                 battery_health_pct=100,
                 battery_cycles=0,
                 accessories=["Lacrado na caixa", "Garantia mundial Apple 12 meses", "Carregador original"],
-                raw_description="Produto 100% original lacrado com NF-e e garantia oficial Apple de 1 ano. Entrega Full para Recife.",
+                raw_description="Produto 100% original lacrado com NF-e e garantia oficial Apple de 1 ano. Envio imediato para Recife.",
             ),
 
             # 2. Intermediário Novo: MacBook Air M2 13'' 8GB 256GB
             ComputerListing(
-                id="new-ret-02",
+                id="new-ret-m2-02",
                 title="MacBook Air 13'' M2 8GB 256GB Meia-noite - Novo Lacrado",
                 condition="novo",
-                price=7499.0,
+                price=7299.0,
                 location="Entrega Recife/PE (Frete Prime)",
                 seller_type="loja_oficial",
                 source="Amazon Brasil (Vendido e entregue por Amazon)",
@@ -65,7 +65,7 @@ class NewScoutAgent:
 
             # 3. Intermediário Avançado Novo: MacBook Air 13'' M3 16GB 512GB
             ComputerListing(
-                id="new-ret-03",
+                id="new-ret-m3-03",
                 title="MacBook Air 13'' M3 16GB RAM 512GB SSD Meia-noite - Novo Lacrado",
                 condition="novo",
                 price=10499.0,
@@ -88,10 +88,10 @@ class NewScoutAgent:
 
             # 4. Pro Novo: MacBook Pro 14'' M3 Pro 18GB 512GB
             ComputerListing(
-                id="new-ret-04",
+                id="new-ret-m3pro-04",
                 title="MacBook Pro 14'' M3 Pro 18GB 512GB Preto Espacial - Novo Lacrado",
                 condition="novo",
-                price=16999.0,
+                price=16899.0,
                 location="iPlace Shopping Recife (Pronta Entrega)",
                 seller_type="loja_oficial",
                 source="iPlace Apple Premium Reseller Recife",
@@ -106,12 +106,12 @@ class NewScoutAgent:
                 battery_health_pct=100,
                 battery_cycles=0,
                 accessories=["Lacrado na caixa", "Garantia Apple 1 ano", "Carregador 70W USB-C"],
-                raw_description="Pronta entrega física em Recife no Shopping Recife. Desempenho profissional para edição e engenharia de software pesada.",
+                raw_description="Pronta entrega física em Recife no Shopping Recife. Desempenho profissional para edição e engenharia pesada.",
             ),
 
             # 5. Topo de Linha Novo: MacBook Pro 16'' M4 Pro 24GB 512GB
             ComputerListing(
-                id="new-ret-05",
+                id="new-ret-m4pro-05",
                 title="MacBook Pro 16'' M4 Pro 24GB RAM 512GB SSD Preto Espacial - Lançamento",
                 condition="novo",
                 price=22499.0,
